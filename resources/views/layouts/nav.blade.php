@@ -4,7 +4,7 @@
         <div class="nav-pill mx-auto d-flex align-items-center justify-content-between px-3">
             <!-- logo -->
             <a class="d-flex align-items-center gap-2 logo-link" href="{{ url('/') }}">
-                <img src="{{ asset('images/logo.png') }}" alt="Logo" class="logo-img">
+                <img src="{{ asset('images/Logo.png') }}" alt="Logo" class="logo-img">
                 <span class="visually-hidden">Home</span>
             </a>
 
@@ -30,7 +30,7 @@
 
                 <!-- language circle -->
                 <div class="lang-circle d-flex align-items-center justify-content-center">
-                    <img src="{{ asset('images/flag-id.png') }}" alt="ID" class="flag-img">
+                    <img src="{{ asset('images/Group 2.png') }}" alt="ID" class="flag-img">
                 </div>
             </div>
         </div>

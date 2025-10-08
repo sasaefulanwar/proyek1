@@ -6,12 +6,6 @@ body {
     font-style: normal;
 }
 
-/* background hero (sesuaikan background image jika perlu) */
-/* .bg-hero {
-    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
-        url("/images/hero-bg.jpg") center/cover no-repeat;
-} */
-
 /* Satu-satunya background image: HERO wrapper */
 .hero-wrapper {
     position: relative;
@@ -26,7 +20,7 @@ body {
 
     display: flex;
     flex-direction: column; /* taruh anak-anak (nav + hero) ke bawah */
-    align-items: center;    /* tengah horizontal */
+    align-items: center; /* tengah horizontal */
     padding-top: 20px;
 }
 
@@ -40,15 +34,28 @@ body {
     position: relative;
     z-index: 30;
     color: #fff;
-    margin-top: 60px;  /* kasih jarak biar gak nempel navbar */
+    margin-top: 60px; /* kasih jarak biar gak nempel navbar */
     max-width: 640px;
     text-align: right; /* tengahin teks */
 }
 
 /* styling contoh */
-.muted-hashtag { color: #FFD700; font-weight:700; margin-bottom: 12px; }
-.hero-title { font-size: 64px; line-height: 0.95; font-weight: 800; margin: 0 0 18px; }
-.hero-cta { color: #ffd54a; text-decoration: none; font-weight: 700; }
+.muted-hashtag {
+    color: #ffd700;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+.hero-title {
+    font-size: 64px;
+    line-height: 0.95;
+    font-weight: 800;
+    margin: 0 0 18px;
+}
+.hero-cta {
+    color: #ffd54a;
+    text-decoration: none;
+    font-weight: 700;
+}
 
 /* pastikan tidak ada section lain yang memberikan background image lagi */
 
@@ -64,7 +71,7 @@ body {
 
 /* logo */
 .logo-img {
-    height: 36px;
+    height: 60px;
     width: auto;
 }
 
@@ -141,4 +148,19 @@ body {
         rgba(0, 26, 26, 0.6)
     );
     pointer-events: none; /* biar tidak mengganggu klik */
+}
+
+
+/* button card apotek */
+.btn-teal {
+    background-color: #008080;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    transition: background-color 0.3s ease;
+}
+
+.btn-teal:hover {
+    background-color: #006666;
 }
