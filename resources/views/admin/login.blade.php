@@ -120,15 +120,28 @@
 <body>
     <div class="login-card">
         <h4>Admin Login</h4>
-        <p class="login-sub">Halo, masukkan detail Anda di sini untuk masuk ke dasboard</p>
+        <p class="login-sub">Halo, masukkan detail Anda di sini untuk masuk ke dashboard</p>
 
-        <form action="#" method="post" onsubmit="event.preventDefault(); alert('submit simulated');">
+        {{-- tampilkan pesan error/success --}}
+        @if (session('error'))
+            <div class="alert alert-danger">{{ session('error') }}</div>
+        @endif
+
+        @if (session('success'))
+            <div class="alert alert-success">{{ session('success') }}</div>
+        @endif
+
+        {{-- FORM LOGIN --}}
+        <form action="{{ route('login.post') }}" method="POST">
+            @csrf
+
             <div class="mb-3">
-                <input type="email" class="form-control" placeholder="Email" required>
+                <input type="text" name="username" class="form-control" placeholder="Username" required>
             </div>
 
             <div class="mb-2 field-with-icon">
-                <input id="passwordInput" type="password" class="form-control" placeholder="Password" required>
+                <input id="passwordInput" name="password" type="password" class="form-control" placeholder="Password"
+                    required>
                 <button type="button" class="toggle-visibility" aria-label="toggle password"
                     onclick="togglePassword()">
                     <svg id="eyeIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#222"
@@ -154,22 +167,18 @@
 
     <script>
         function togglePassword() {
-            const pw = document.getElementById('passwordInput');
-            const eye = document.getElementById('eyeIcon');
-            if (pw.type === 'password') {
-                pw.type = 'text';
-                eye.innerHTML =
-                    '<path d="M17.94 17.94C16.03 19.1 13.6 20 11 20 4 20 1 12 1 12s1.1-2.4 3.06-4.7M9.5 9.5a3 3 0 0 0 4 4"/><path d="M1 1l22 22"/>';
+            const input = document.getElementById('passwordInput');
+            const eyeIcon = document.getElementById('eyeIcon');
+            if (input.type === 'password') {
+                input.type = 'text';
+                eyeIcon.innerHTML =
+                    '<path d="M17.94 17.94A10.12 10.12 0 0 1 12 20c-7 0-11-8-11-8a19.77 19.77 0 0 1 4.23-5.3M22.54 11.88A19.77 19.77 0 0 1 18 6.7M1 1l22 22" />';
             } else {
-                pw.type = 'password';
-                eye.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12z"/><circle cx="12" cy="12" r="3"/>';
+                input.type = 'password';
+                eyeIcon.innerHTML =
+                    '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12z" /><circle cx="12" cy="12" r="3" />';
             }
         }
-    </script>
-
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous">
     </script>
 </body>
 

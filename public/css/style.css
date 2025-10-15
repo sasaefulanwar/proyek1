@@ -150,7 +150,6 @@ body {
     pointer-events: none; /* biar tidak mengganggu klik */
 }
 
-
 /* button card apotek */
 .btn-teal {
     background-color: #008080;
@@ -166,3 +165,255 @@ body {
 }
 
 /* login */
+
+/* layout dasar */
+.admin-layout {
+    min-height: 100vh;
+    background: #0f756b;
+    color: #fff;
+}
+.sidebar {
+    width: 220px;
+    background: #fff;
+    color: #333;
+    min-height: 100vh;
+    border-right: 1px solid rgba(0, 0, 0, 0.05);
+    padding-top: 20px;
+}
+.sidebar .brand-logo {
+    width: 70px;
+    height: 70px;
+    object-fit: contain;
+}
+.sidebar .brand-text {
+    font-weight: 700;
+    color: #008080;
+}
+.sidebar .nav-link {
+    color: #333;
+    padding: 10px 14px;
+    border-radius: 8px;
+    margin-bottom: 6px;
+}
+.sidebar .nav-link.active,
+.sidebar .nav-link:hover {
+    background: linear-gradient(90deg, #00808020, #00808010);
+    color: #008080;
+}
+
+/* main content */
+.main-content {
+    background: transparent;
+}
+.topbar {
+    height: 72px;
+    background: #ffffff;
+    color: #000000;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+.topbar .avatar {
+    background: #ffc107;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #024;
+    font-weight: 700;
+}
+
+/* content area */
+.content-area {
+    background: #0f756b;
+    padding-bottom: 60px;
+}
+
+/* stat card */
+.stat-card {
+    background: #fff;
+    color: #000;
+    border-radius: 12px;
+    box-shadow: 0 6px 0 rgba(255, 180, 0, 0.15);
+    align-items: center;
+}
+.stat-icon {
+    background: #f3f3f3;
+    width: 64px;
+    height: 64px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+}
+.stat-body .stat-title {
+    font-weight: 600;
+    color: #333;
+}
+.stat-body .stat-value {
+    font-size: 22px;
+    font-weight: 700;
+}
+
+/* table card */
+.table-card {
+    border-radius: 12px;
+    margin-top: 18px;
+    border: 4px solid #ffc107; /* kuning pinggir seperti screenshot */
+    background: #fff;
+    color: #000;
+}
+.table-card .card-header {
+    background: #fff;
+    color: #333;
+    border-bottom: 1px solid #f0f0f0;
+    padding: 14px;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+}
+.table-head th {
+    background: #fff8;
+    color: #333;
+    font-weight: 700;
+}
+
+/* collapsed sidebar */
+.sidebar.collapsed {
+    width: 70px;
+}
+.sidebar.collapsed .brand-text {
+    display: none;
+}
+
+/* ---------- Sidebar collapsed (icon-only) ---------- */
+.sidebar.collapsed {
+    width: 72px; /* lebar sempit untuk icon-only */
+    padding-left: 12px;
+    padding-right: 12px;
+    transition: width 220ms ease, padding 220ms ease;
+}
+
+/* sembunyikan teks, tampilkan ikon terpusat */
+.sidebar.collapsed .brand-text,
+.sidebar.collapsed .nav-text,
+.sidebar.collapsed .btn-text {
+    display: none !important;
+}
+
+/* perkecil logo jadi hanya icon */
+.sidebar.collapsed .brand-logo {
+    width: 36px;
+    height: 36px;
+    object-fit: contain;
+}
+
+/* center item secara horizontal saat collapsed */
+.sidebar.collapsed .brand,
+.sidebar.collapsed .nav,
+.sidebar.collapsed .nav .nav-link,
+.sidebar.collapsed .nav .nav-link .nav-icon,
+.sidebar.collapsed .logout-form button {
+    justify-content: center;
+    text-align: center;
+}
+
+/* pastikan nav-link tetap cukup tinggi untuk klik */
+.sidebar .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+}
+
+/* icon style */
+.nav-icon {
+    font-size: 20px;
+    width: 28px; /* reserve space for alignment */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* tombol logout icon-only */
+.logout-form button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.logout-form .btn-icon {
+    font-size: 18px;
+}
+
+/* transisi halus */
+.sidebar .nav-link,
+.sidebar .brand-logo,
+.logout-form button {
+    transition: all 180ms ease;
+}
+
+/* responsive fallback */
+@media (max-width: 992px) {
+    .sidebar {
+        display: none;
+    }
+}
+
+/* === HEADER ADMIN === */
+.admin-header {
+    background-color: #0f756b;
+    padding: 1.5rem;
+    border-radius: 12px;
+}
+
+.admin-header h2 {
+    color: #ffffff;
+    font-weight: 700;
+}
+
+/* === SEARCH BOX === */
+.search-form {
+    display: flex;
+    align-items: center;
+}
+
+.search-box {
+    display: flex;
+    align-items: center;
+    background: #fff;
+    border: 2px solid #f7b731; /* warna oranye */
+    border-radius: 25px;
+    padding: 0.3rem 1rem;
+    width: 300px;
+}
+
+.search-icon {
+    font-size: 1.2rem;
+    color: #f7b731;
+}
+
+.search-input {
+    border: none;
+    outline: none;
+    box-shadow: none;
+    flex: 1;
+}
+
+.search-input::placeholder {
+    color: #555;
+    font-size: 0.95rem;
+}
+
+.search-btn {
+    background-color: #001eff; /* biru terang */
+    color: #fff;
+    border-radius: 25px;
+    padding: 0.4rem 1.2rem;
+    font-weight: 600;
+    transition: 0.2s;
+}
+
+.search-btn:hover {
+    background-color: #0048ff;
+}
+
