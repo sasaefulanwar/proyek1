@@ -13,6 +13,7 @@
     {{-- Favicon + Custom CSS --}}
     <link rel="icon" type="image/png" sizes="512x512" href="{{ asset('images/Logo_remove.png') }}">
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    
 </head>
 
 <body>
@@ -24,7 +25,7 @@
                 <span class="brand-text">MediFinder</span>
             </div>
 
-            <nav class="nav flex-column">
+            <nav class="nav flex-column ">
                 {{-- DASHBOARD --}}
                 <a href="{{ route('admin.dashboard') }}"
                     class="nav-link {{ request()->is('admin/dashboard') ? 'active' : '' }}">
@@ -39,9 +40,37 @@
                         <span class="nav-icon">👤</span>
                         <span class="nav-text">Admin</span>
                     </a>
+                    <a href="{{ route('admin.apotek') }}"
+                        class="nav-link {{ request()->is('admin/apotek') ? 'active' : '' }}">
+                        <span class="nav-icon">🏪</span>
+                        <span class="nav-text">Apotek</span>
+                    </a>
+                    <a href="{{ route('admin.artikel') }}"
+                        class="nav-link {{ request()->is('admin/artikel') ? 'active' : '' }}">
+                        <span class="nav-icon">📰</span>
+                        <span class="nav-text">Artikel</span>
+
+                    </a>
                 @endif
 
-                {{-- APOTEK --}}
+                {{-- ADMIN APOTEK --}}
+                @if (Session::get('role') === 'admin_apotek')
+                    <a href="{{ route('admin.profile') }}"
+                        class="nav-link {{ request()->is('admin/profile') ? 'active' : '' }}">
+                        <span class="nav-icon">🏪</span>
+                        <span class="nav-text">Profile Apotek</span>
+                    </a>
+                    <a href="{{ route('admin.obat') }}"
+                        class="nav-link {{ request()->is('admin/obat') ? 'active' : '' }}">
+                        <span class="nav-icon">💊</span>
+                        <span class="nav-text">Obat</span>
+                    </a>
+                    <a href="{{ route('admin.laporan') }}"
+                        class="nav-link {{ request()->is('admin/laporan') ? 'active' : '' }}">
+                        <span class="nav-icon">📄</span>
+                        <span class="nav-text">Laporan</span>
+                    </a>
+                @endif
 
                 <form action="{{ route('logout') }}" method="POST" class="mt-3 logout-form">
                     @csrf

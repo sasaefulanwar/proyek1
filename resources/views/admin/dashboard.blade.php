@@ -47,26 +47,40 @@
                         <tr>
                             <th>ID</th>
                             <th>Nama Apotek</th>
-                            <th>Alamat</th>
-                            <th>Admin Pengelola</th>
+                            <th>Email</th>
+                            <th>Penanggung Jawab</th>
                             <th>Status</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>101</td>
-                            <td>Apotek Sehat Makmur Jaya</td>
-                            <td>Jl Mawar No.10</td>
-                            <td>NovalGaming@gmail.com</td>
-                            <td><span class="badge bg-warning text-dark">Menunggu</span></td>
-                            <td>
-                                <button class="btn btn-sm btn-primary">Verifikasi</button>
-                                <button class="btn btn-sm btn-danger ms-2">Tolak</button>
-                            </td>
-                        </tr>
+                        @forelse ($dataApotek as $item)
+                            <tr>
+                                <td>{{ $item->id }}</td>
+                                <td>{{ $item->nama_apotek }}</td>
+                                <td>{{ $item->email }}</td>
+                                <td>{{ $item->nama_penanggung_jawab ?? '-' }}</td>
+                                <td>
+                                    <span class="badge bg-warning text-dark">{{ ucfirst($item->status) }}</span>
+                                </td>
+                                <td>
+                                    <a href="{{ route('apotek.verifikasi', $item->id) }}"
+                                        class="btn btn-sm btn-primary">Verifikasi</a>
+                                    {{-- <form action="{{ route('apotek.tolak', $item->id) }}" method="POST" class="d-inline">
+                                        @csrf
+                                        @method('PUT')
+                                        <button type="submit" class="btn btn-sm btn-danger ms-2">Tolak</button>
+                                    </form> --}}
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="6" class="text-center">Belum ada apotek yang menunggu verifikasi</td>
+                            </tr>
+                        @endforelse
                     </tbody>
                 </table>
+
             </div>
         </div>
     @endif

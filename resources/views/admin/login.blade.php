@@ -7,7 +7,6 @@
     <title>Login</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
     <style>
         :root {
@@ -21,22 +20,31 @@
             margin: 0;
             font-family: "Poppins", sans-serif;
             background-color: var(--teal);
+        }
+
+        .login-wrapper {
+            display: flex;
+            height: 100vh;
+        }
+
+        .left-bg {
+            flex: 1;
+            background-color: var(--teal);
+        }
+
+        .login-card {
+            flex: 1;
             display: flex;
             align-items: center;
             justify-content: center;
-        }
-
-        /* kartu login */
-        .login-card {
-            width: 420px;
             background: #ffffff;
-            border-radius: 14px;
-            padding: 34px 36px;
-            box-shadow: 0 10px 30px rgba(2, 6, 23, 0.35);
-            border: 1px solid rgba(0, 0, 0, 0.06);
         }
 
-        .login-card h4 {
+        .login-box {
+            width: 380px;
+        }
+
+        .login-box h4 {
             font-weight: 700;
             font-size: 18px;
             margin-bottom: 6px;
@@ -57,13 +65,11 @@
             height: 48px;
             border: 1px solid rgba(0, 0, 0, 0.08);
             padding: 10px 12px;
-            box-shadow: none;
         }
 
         .form-control:focus {
-            outline: none;
-            box-shadow: none;
             border-color: rgba(0, 128, 128, 0.6);
+            box-shadow: none;
         }
 
         .field-with-icon {
@@ -77,7 +83,6 @@
             transform: translateY(-50%);
             background: transparent;
             border: none;
-            padding: 6px;
             cursor: pointer;
             color: #444;
         }
@@ -107,62 +112,82 @@
             margin-top: 8px;
         }
 
-        /* responsive */
         @media (max-width: 768px) {
+            .login-wrapper {
+                flex-direction: column;
+            }
+
+            .left-bg {
+                display: none;
+            }
+
             .login-card {
+                flex: none;
+                width: 100%;
+                height: 100vh;
+            }
+
+            .login-box {
                 width: 90%;
-                padding: 26px;
             }
         }
     </style>
 </head>
 
 <body>
-    <div class="login-card">
-        <h4>Admin Login</h4>
-        <p class="login-sub">Halo, masukkan detail Anda di sini untuk masuk ke dashboard</p>
+    <div class="login-wrapper">
+        <div class="left-bg"></div>
 
-        {{-- tampilkan pesan error/success --}}
-        @if (session('error'))
-            <div class="alert alert-danger">{{ session('error') }}</div>
-        @endif
+        <div class="login-card">
+            <div class="login-box">
+                <h4>Admin Login</h4>
+                <p class="login-sub">Halo, masukkan detail Anda di sini untuk masuk ke dashboard</p>
 
-        @if (session('success'))
-            <div class="alert alert-success">{{ session('success') }}</div>
-        @endif
+                @if (session('error'))
+                    <div class="alert alert-danger">{{ session('error') }}</div>
+                @endif
 
-        {{-- FORM LOGIN --}}
-        <form action="{{ route('login.post') }}" method="POST">
-            @csrf
+                @if (session('success'))
+                    <div class="alert alert-success">{{ session('success') }}</div>
+                @endif
 
-            <div class="mb-3">
-                <input type="text" name="username" class="form-control" placeholder="Username" required>
+                <form action="{{ route('login.post') }}" method="POST">
+                    @csrf
+
+                    <div class="mb-3">
+                        <input type="text" name="username" class="form-control" placeholder="Username" required>
+                    </div>
+
+                    <div class="mb-2 field-with-icon">
+                        <input id="passwordInput" name="password" type="password" class="form-control"
+                            placeholder="Password" required>
+                        <button type="button" class="toggle-visibility" onclick="togglePassword()">
+                            <svg id="eyeIcon" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                stroke="#222" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12z" />
+                                <circle cx="12" cy="12" r="3" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div></div>
+                        <a href="#" class="forgot-link">Lupa password?</a>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary-cta">Masuk</button>
+
+                    <p class="small-note">
+                        Tidak punya akun?
+                        <a href="{{ route('apotek.create') }}"
+                            style="color: #008080; text-decoration: none; font-weight:600">
+                            Ajukan sekarang
+                        </a>
+                    </p>
+
+                </form>
             </div>
-
-            <div class="mb-2 field-with-icon">
-                <input id="passwordInput" name="password" type="password" class="form-control" placeholder="Password"
-                    required>
-                <button type="button" class="toggle-visibility" aria-label="toggle password"
-                    onclick="togglePassword()">
-                    <svg id="eyeIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#222"
-                        stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12z" />
-                        <circle cx="12" cy="12" r="3" />
-                    </svg>
-                </button>
-            </div>
-
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <div></div>
-                <a href="#" class="forgot-link">Lupa password?</a>
-            </div>
-
-            <button type="submit" class="btn btn-primary-cta">Masuk</button>
-
-            <p class="small-note">Tidak punya akun?
-                <a href="#" style="color: #008080; text-decoration: none; font-weight:600">Ajukan sekarang</a>
-            </p>
-        </form>
+        </div>
     </div>
 
     <script>
