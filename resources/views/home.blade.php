@@ -11,125 +11,155 @@
 @endsection
 
 @section('content')
-    <div class="container mt-5">
-        <h2>Lokasi Anda</h2>
-        <div id="status">Mencari lokasi...</div>
-        <div id="map" style="height:60vh; min-height:360px; border-radius: 12px; overflow: hidden;"></div>
-        <div id="address" style="margin-top:12px; font-weight:600;"></div>
+    <div class="container py-5">
 
-        <hr class="my-4">
+        {{-- Bagian Tentang & Lokasi --}}
+        <div class="row align-items-center mb-5">
+            {{-- Kolom Kiri: Tentang --}}
+            <div class="col-lg-6 mb-4 mb-lg-0">
+                <h2 class="fw-bold mb-3">Tentang Medifinder</h2>
+                <h1 class="fw-bold" style="color:#008080; line-height:1.2;">
+                    <em>Platform</em> Khusus<br>Untuk Pencarian<br>Apotek Online
+                </h1>
+                <p class="mt-3 text-muted">
+                    Unduh aplikasi MediFinder dan temukan kemudahan akses ke lebih dari 50.000 produk kesehatan,
+                    mulai dari obat-obatan, vitamin, suplemen, hingga peralatan medis.
+                    Nikmati fitur unggulan seperti konsultasi online, beli obat dari rumah, dan pilih apotek favorit Anda.
+                </p>
 
-        <h3>Daftar Apotek di Wilayah <span id="namaWilayah" style="color:#008080;">(Menunggu lokasi...)</span></h3>
-
-        <div class="row mt-4">
-            <!-- Card Apotek Dummy -->
-            <div class="col-md-4 mb-3">
-                <div class="card shadow-sm border-0">
-                    <div class="card-body">
-                        <h5 class="card-title">Apotek Sehat Sentosa</h5>
-                        <p class="card-text">Jl. Raya Indramayu No. 10</p>
-                        <button class="btn btn-teal">Lihat Detail</button>
-                    </div>
-                </div>
+                <ul class="mt-3" style="list-style:none; padding-left:0;">
+                    <li><i class="fa-solid fa-circle-check" style="color: #008080;"></i> Pencarian apotek fleksibel</li>
+                    <li><i class="fa-solid fa-circle-check" style="color: #008080;"></i> Konsultasi online</li>
+                    <li><i class="fa-solid fa-circle-check" style="color: #008080;"></i> Beli obat dari rumah</li>
+                    <li><i class="fa-solid fa-circle-check" style="color: #008080;"></i> Bisa pilih apotek favorit</li>
+                </ul>
             </div>
 
-            <div class="col-md-4 mb-3">
-                <div class="card shadow-sm border-0">
-                    <div class="card-body">
-                        <h5 class="card-title">Apotek Mandiri Farma</h5>
-                        <p class="card-text">Jl. Sudirman No. 25</p>
-                        <button class="btn btn-teal">Lihat Detail</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-4 mb-3">
-                <div class="card shadow-sm border-0">
-                    <div class="card-body">
-                        <h5 class="card-title">Apotek Keluarga Indramayu</h5>
-                        <p class="card-text">Jl. Pahlawan No. 7</p>
-                        <button class="btn btn-teal">Lihat Detail</button>
-                    </div>
-                </div>
+            {{-- Kolom Kanan: Map --}}
+            <div class="col-lg-6">
+                <h4 class="fw-bold mb-2">Lokasi Anda</h4>
+                <div id="map" style="height:60vh; border-radius:12px; overflow:hidden;"></div>
+                <div id="address" class="mt-2 fw-semibold text-teal"></div>
             </div>
         </div>
 
-        <!-- Leaflet CSS & JS -->
-        <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-        <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+        <hr class="my-4">
 
-        <style>
-           
-        </style>
+        {{-- Daftar Apotek --}}
+        <h3 class="fw-bold mb-4">
+            Daftar Apotek di Wilayah
+            <span id="namaWilayah" style="color:#008080;">
+                {{ $lokasi ?? '(Menunggu lokasi...)' }}
+            </span>
+        </h3>
 
-        <script>
-            const map = L.map('map').fitWorld();
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© OpenStreetMap contributors'
-            }).addTo(map);
+        <div class="row g-4">
+            @forelse ($apotek as $a)
+                <div class="col-md-3">
+                    <div class="card shadow-sm border-0 rounded-4 overflow-hidden h-100">
+                        <img src="{{ asset('storage/' . $a->foto_apotek) }}" class="card-img-top" alt="Apotek"
+                            style="height:200px; object-fit:cover;">
+                        <div class="card-body text-center">
+                            <h5 class="fw-bold mb-1">{{ $a->nama_apotek }}</h5>
+                            <p class="text-muted mb-3">{{ $a->alamat }}</p>
+                            <span class="badge {{ $a->status_buka == 'Buka' ? 'bg-success' : 'bg-danger' }}">
+                                {{ $a->status_buka }}
+                            </span>
+                            <div class="mt-3">
+                                <a href="#"
+                                    class="btn btn-warning text-white fw-semibold px-4 py-2 rounded-pill shadow-sm">
+                                    Lihat Detail
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @empty
+                <p class="text-muted">Belum ada apotek yang cocok di wilayah ini.</p>
+            @endforelse
+        </div>
 
-            let userMarker = null;
 
-            async function reverseViaProxy(lat, lon) {
-                const url = "{{ route('reverse') }}?lat=" + encodeURIComponent(lat) + "&lon=" + encodeURIComponent(lon) +
-                    "&email=your@domain.com";
-                const resp = await fetch(url);
-                if (!resp.ok) throw new Error('HTTP ' + resp.status);
-                return await resp.json();
-            }
-
-            async function onLocationFound(e) {
-                const lat = e.latlng.lat;
-                const lon = e.latlng.lng;
-                const userLatLng = e.latlng;
-
-                if (userMarker) userMarker.setLatLng(userLatLng);
-                else userMarker = L.marker(userLatLng).addTo(map).bindPopup('Lokasi Anda').openPopup();
-
-                map.setView(userLatLng, 15);
-                document.getElementById('status').textContent = 'Lokasi ditemukan. Mengambil nama wilayah...';
-
-                try {
-                    const json = await reverseViaProxy(lat, lon);
-                    const addr = json.address || {};
-                    const kelurahan = addr.suburb || addr.neighbourhood || addr.village || addr.hamlet || '';
-                    const kecamatan = addr.city_district || addr.state_district || addr.county || '';
-                    const kabkot = addr.city || addr.town || addr.municipality || addr.county || '';
-                    const prov = addr.state || '';
-
-                    const parts = [];
-                    if (kelurahan) parts.push(kelurahan);
-                    if (kecamatan) parts.push('Kec. ' + kecamatan);
-                    if (kabkot && !parts.join(', ').includes(kabkot)) parts.push(kabkot);
-                    if (prov && !parts.join(', ').includes(prov)) parts.push(prov);
-
-                    const human = parts.length ? parts.join(', ') : (json.display_name || 'Nama daerah tidak tersedia');
-
-                    document.getElementById('status').textContent = 'Lokasi Anda saat ini berada di:';
-                    document.getElementById('address').textContent = human;
-                    document.getElementById('namaWilayah').textContent = human;
-
-                    if (userMarker) userMarker.bindPopup('<strong>Lokasi Anda</strong><br>' + human).openPopup();
-                } catch (err) {
-                    console.error(err);
-                    document.getElementById('status').textContent = 'Gagal melakukan reverse geocode';
-                    document.getElementById('address').textContent = err.message || String(err);
-                }
-            }
-
-            function onLocationError(e) {
-                document.getElementById('status').textContent = 'Tidak bisa mendapatkan lokasi: ' + e.message;
-                document.getElementById('address').textContent = 'Buka lewat https atau localhost dan izinkan akses lokasi.';
-                map.setView([-6.3265, 108.3215], 13);
-            }
-
-            map.locate({
-                setView: false,
-                maxZoom: 16,
-                watch: false
-            });
-            map.on('locationfound', onLocationFound);
-            map.on('locationerror', onLocationError);
-        </script>
     </div>
+
+    {{-- Leaflet CSS & JS --}}
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+    <style>
+        .text-teal {
+            color: #008080;
+        }
+
+        .btn-warning {
+            background-color: #ffb400;
+            border: none;
+        }
+
+        .btn-warning:hover {
+            background-color: #e6a300;
+        }
+    </style>
+
+    <script>
+        const map = L.map('map').fitWorld();
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        let userMarker = null;
+
+        async function reverseViaProxy(lat, lon) {
+            const url = "{{ route('reverse') }}?lat=" + encodeURIComponent(lat) + "&lon=" + encodeURIComponent(lon);
+            const resp = await fetch(url);
+            if (!resp.ok) throw new Error('HTTP ' + resp.status);
+            return await resp.json();
+        }
+
+        async function onLocationFound(e) {
+            const lat = e.latlng.lat;
+            const lon = e.latlng.lng;
+            const userLatLng = e.latlng;
+
+            if (userMarker) userMarker.setLatLng(userLatLng);
+            else userMarker = L.marker(userLatLng).addTo(map).bindPopup('Lokasi Anda').openPopup();
+
+            map.setView(userLatLng, 15);
+
+            try {
+                const json = await reverseViaProxy(lat, lon);
+                const addr = json.address || {};
+                const kel = addr.suburb || addr.village || '';
+                const kec = addr.city_district || addr.county || '';
+                const kota = addr.city || '';
+                const prov = addr.state || '';
+
+                const text = [kel, `Kec.${kec}`, kota, prov].filter(Boolean).join(', ');
+
+                document.getElementById('address').textContent = text;
+                document.getElementById('namaWilayah').textContent = text;
+
+                // ⛔️ Cegah reload berulang
+                const currentParams = new URLSearchParams(window.location.search);
+                if (!currentParams.has('lokasi') && kel) {
+                    window.location.href = "/?lokasi=" + encodeURIComponent(kel);
+                }
+
+            } catch (err) {
+                document.getElementById('address').textContent = 'Gagal memuat lokasi';
+            }
+        }
+
+        function onLocationError(e) {
+            document.getElementById('address').textContent = 'Tidak dapat mengambil lokasi: ' + e.message;
+            map.setView([-6.3265, 108.3215], 13);
+        }
+
+        map.locate({
+            setView: false,
+            maxZoom: 16
+        });
+        map.on('locationfound', onLocationFound);
+        map.on('locationerror', onLocationError);
+    </script>
 @endsection

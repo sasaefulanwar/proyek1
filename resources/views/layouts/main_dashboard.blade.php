@@ -13,7 +13,8 @@
     {{-- Favicon + Custom CSS --}}
     <link rel="icon" type="image/png" sizes="512x512" href="{{ asset('images/Logo_remove.png') }}">
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
-    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
 </head>
 
 <body>
@@ -26,57 +27,90 @@
             </div>
 
             <nav class="nav flex-column ">
+
+                @if (Session::get('role') === 'admin_apotek')
+                    <div class="text-center mb-3">
+                        @if ($apotek && $apotek->foto_apotek)
+                            <img src="{{ asset('storage/' . $apotek->foto_apotek) }}" alt="Foto Apotek"
+                                class="rounded-3 mb-2" style="width: 100%; height: 100px; object-fit: cover;">
+                        @else
+                            <img src="{{ asset('images/default-apotek.jpg') }}" alt="Foto Default"
+                                class="rounded-3 mb-2" style="width: 100%; height: 100px; object-fit: cover;">
+                        @endif
+
+                        <h6 class="text-black fw-bold">{{ $apotek->nama_apotek ?? 'Nama Apotek' }}</h6>
+                    </div>
+                @endif
+                
                 {{-- DASHBOARD --}}
                 <a href="{{ route('admin.dashboard') }}"
                     class="nav-link {{ request()->is('admin/dashboard') ? 'active' : '' }}">
-                    <span class="nav-icon">🏠</span>
-                    <span class="nav-text">Dashboard</span>
+                    <span class="nav-icon text-warning"><i class="fa-solid fa-gauge"></i></span>
+                    <span class="nav-text text-black ms-2">Dashboard</span>
                 </a>
 
                 {{-- ADMIN --}}
                 @if (Session::get('role') === 'admin')
                     <a href="{{ route('admin.list') }}"
                         class="nav-link {{ request()->is('admin/admin') ? 'active' : '' }}">
-                        <span class="nav-icon">👤</span>
-                        <span class="nav-text">Admin</span>
+                        <span class="nav-icon text-warning"><i class="fa-solid fa-store"></i></span>
+                        <span class="nav-text text-black ms-2">Apotek</span>
                     </a>
                     <a href="{{ route('admin.apotek') }}"
                         class="nav-link {{ request()->is('admin/apotek') ? 'active' : '' }}">
-                        <span class="nav-icon">🏪</span>
-                        <span class="nav-text">Apotek</span>
+                        <span class="nav-icon text-warning"><i class="fa-solid fa-users"></i></span>
+                        <span class="nav-text text-black ms-2">Admin Apotek</span>
                     </a>
                     <a href="{{ route('admin.artikel') }}"
                         class="nav-link {{ request()->is('admin/artikel') ? 'active' : '' }}">
-                        <span class="nav-icon">📰</span>
-                        <span class="nav-text">Artikel</span>
+                        <span class="nav-icon text-warning"><i class="fa-solid fa-newspaper"></i></span>
+                        <span class="nav-text text-black ms-2">Artikel</span>
 
                     </a>
                 @endif
 
                 {{-- ADMIN APOTEK --}}
                 @if (Session::get('role') === 'admin_apotek')
+                    {{-- <div class="text-center mb-3">
+                        @if ($apotek && $apotek->foto_apotek)
+                            <img src="{{ asset('storage/' . $apotek->foto_apotek) }}" alt="Foto Apotek"
+                                class="rounded-3 mb-2" style="width: 100%; height: 100px; object-fit: cover;">
+                        @else
+                            <img src="{{ asset('images/default-apotek.jpg') }}" alt="Foto Default"
+                                class="rounded-3 mb-2" style="width: 100%; height: 100px; object-fit: cover;">
+                        @endif
+
+                        <h6 class="text-black fw-bold">{{ $apotek->nama_apotek ?? 'Nama Apotek' }}</h6>
+                    </div> --}}
+
+
+
+
+                    {{-- Menu --}}
                     <a href="{{ route('admin.profile') }}"
                         class="nav-link {{ request()->is('admin/profile') ? 'active' : '' }}">
-                        <span class="nav-icon">🏪</span>
-                        <span class="nav-text">Profile Apotek</span>
+                        <span class="nav-icon text-warning"><i class="fa-solid fa-store"></i></span>
+                        <span class="nav-text text-black ms-2">Profil Apotek</span>
                     </a>
+
                     <a href="{{ route('admin.obat') }}"
                         class="nav-link {{ request()->is('admin/obat') ? 'active' : '' }}">
-                        <span class="nav-icon">💊</span>
-                        <span class="nav-text">Obat</span>
+                        <span class="nav-icon text-warning"><i class="fa-solid fa-pills"></i></span>
+                        <span class="nav-text text-black ms-2">Obat</span>
                     </a>
+
                     <a href="{{ route('admin.laporan') }}"
                         class="nav-link {{ request()->is('admin/laporan') ? 'active' : '' }}">
-                        <span class="nav-icon">📄</span>
-                        <span class="nav-text">Laporan</span>
+                        <span class="nav-icon text-warning"><i class="fa-solid fa-chart-line"></i></span>
+                        <span class="nav-text text-black ms-2">Laporan</span>
                     </a>
                 @endif
 
                 <form action="{{ route('logout') }}" method="POST" class="mt-3 logout-form">
                     @csrf
                     <button type="submit" class="btn btn-danger w-100">
-                        <span class="btn-icon">🔒</span>
-                        <span class="btn-text">Keluar</span>
+                        <span class="nav-icon text-warning"><i class="fa-solid fa-right-from-bracket"></i></span>
+                        <span class="nav-text text-white ms-2">Keluar</span>
                     </button>
                 </form>
             </nav>

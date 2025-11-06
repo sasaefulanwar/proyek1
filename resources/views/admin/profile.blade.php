@@ -1,5 +1,3 @@
-
-
 @extends('layouts.main_dashboard')
 @section('title', $title ?? 'Daftar Admin')
 
@@ -52,6 +50,16 @@
                     </div>
 
                     <div class="mb-3">
+                        <label class="fw-bold">Status Buka</label>
+                        <select name="status_buka" class="form-select" required>
+                            <option value="Buka" {{ ($apotek->status_buka ?? '') == 'Buka' ? 'selected' : '' }}>Buka
+                            </option>
+                            <option value="Tutup" {{ ($apotek->status_buka ?? '') == 'Tutup' ? 'selected' : '' }}>Tutup
+                            </option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
                         <label class="fw-bold">Logo Apotek</label><br>
                         @if (!empty($apotek->foto_apotek))
                             <img src="{{ asset('storage/' . $apotek->foto_apotek) }}" alt="Logo Apotek" width="100"
@@ -66,7 +74,6 @@
                         </button>
                     </div>
                 </form>
-
             </div>
         </div>
     </div>

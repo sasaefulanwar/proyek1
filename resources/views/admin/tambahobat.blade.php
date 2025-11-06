@@ -4,7 +4,7 @@
 @section('content')
     <div class="container mt-3">
         <div class="card table-card shadow-sm" style="border-radius: 12px; border: 3px solid orange;">
-            <div class="card-body p-4"> {{-- 🔹 tambah padding di sini --}}
+            <div class="card-body p-4">
                 <h3 class="mb-4 text-center fw-bold">Tambah Obat</h3>
 
                 <form action="{{ route('admin.store') }}" method="POST">

@@ -9,13 +9,10 @@ class Apotek extends Model
 {
     use HasFactory;
 
-    // Nama tabel di database
     protected $table = 'apotek';
 
-    // Primary key
     protected $primaryKey = 'id_apotek';
 
-    // Kolom yang bisa diisi (mass assignable)
     protected $fillable = [
         'nama_apotek',
         'alamat',
@@ -23,6 +20,7 @@ class Apotek extends Model
         'email',
         'jam_operasional',
         'deskripsi',
+        'status_buka',
         'foto_apotek',
     ];
 

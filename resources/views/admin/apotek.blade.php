@@ -23,10 +23,11 @@
                 <table class="table table-hover mb-0 align-middle">
                     <thead class="table-head">
                         <tr>
-                            <th>ID</th>                       
+                            <th>ID</th>
                             <th>Nama Apotek</th>
+                            <th>Lokasi</th>
                             <th>Email</th>
-                            <th>Status</th>
+                            <th>Status Toko</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -34,8 +35,17 @@
                             <tr>
                                 <td>{{ $admin->id_apotek }}</td>
                                 <td>{{ $admin->nama_apotek }}</td>
+                                <td>{{ $admin->alamat }}</td>
                                 <td>{{ $admin->email ?? '-' }}</td>
-                                <td><span class="badge bg-success">Aktif</span></td>
+                                <td>
+                                    @if ($admin->status_buka === 'Buka')
+                                        <span class="badge bg-success">Buka</span>
+                                    @elseif ($admin->status_buka === 'Tutup')
+                                        <span class="badge bg-danger">Tutup</span>
+                                    @else
+                                        <span class="badge bg-secondary">{{ $admin->status_buka }}</span>
+                                    @endif
+                                </td>
                             </tr>
                         @empty
                             <tr>

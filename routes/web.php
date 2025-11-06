@@ -12,6 +12,8 @@ use App\Models\Admin;
 //home "/"
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
+// Artikel
+Route::get('/artikel', [HomeController::class, 'Artikel'])->name('artikel');
 
 //buat map
 Route::get('/reverse', [ReverseController::class, 'reverse'])->name('reverse');
@@ -20,33 +22,17 @@ Route::get('/login', [AdminController::class, 'login'])->name('login');
 Route::post('/login', [AdminController::class, 'authenticate'])->name('login.post');
 Route::post('/logout', [AdminController::class, 'logout'])->name('logout');
 
-Route::get('/admin/dashboard', function () {
-    if (!Session::has('role')) {
-        return redirect('/login')->with('error', 'Silakan login terlebih dahulu');
-    }
-
-    $role = Session::get('role');
-    if (!in_array($role, ['admin', 'admin_apotek'])) {
-        abort(403, 'Akses ditolak');
-    }
-
-    // Hitung total admin apotek
-    $totalAdminApotek = Admin::where('role', 'admin_apotek')->count();
-
-    // Ambil semua apotek yang masih menunggu verifikasi
-    $dataApotek = Admin::where('role', 'admin_apotek')
-        ->where('status', 'menunggu')
-        ->get();
-
-    $title = "Admin Dashboard";
-    $adminName = Session::get('admin_name');
-
-    return view('admin.dashboard', compact('title', 'adminName', 'totalAdminApotek', 'dataApotek'));
-})->name('admin.dashboard');
+Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
 
 Route::get('/admin/admin', [AdminController::class, 'admin'])->name('admin.list');
 Route::get('/admin/apotek', [AdminController::class, 'apotek'])->name('admin.apotek');
 Route::get('/admin/artikel', [AdminController::class, 'artikel'])->name('admin.artikel');
+Route::get('/admin/artikel/tambah', [AdminController::class, 'Tambahartikel'])->name('admin.artikel.tambah');
+Route::post('/admin/artikel/store', [AdminController::class, 'storeArtikel'])->name('admin.artikel.store');
+
+Route::get('/admin/artikel/edit/{id}', [AdminController::class, 'editArtikel'])->name('admin.artikel.edit');
+Route::put('/admin/artikel/update/{id}', [AdminController::class, 'updateArtikel'])->name('admin.artikel.update');
+Route::delete('/admin/artikel/delete/{id}', [AdminController::class, 'deleteArtikel'])->name('admin.artikel.delete');
 
 //Admin apotek
 Route::get('/admin/obat', [AdminController::class, 'obat'])->name('admin.obat');
