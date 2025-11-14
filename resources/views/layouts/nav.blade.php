@@ -26,7 +26,7 @@
 
             <!-- right controls -->
             <div class="d-flex align-items-center gap-3 ms-3">
-                <a class="btn btn-pill-shop" href="/belanja">Belanja Sekarang</a>
+                <a class="btn btn-pill-shop" href="/login">Daftarkan Apotekmu</a>
 
                 <!-- language circle -->
                 <div class="lang-circle d-flex align-items-center justify-content-center">

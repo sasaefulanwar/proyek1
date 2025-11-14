@@ -126,7 +126,16 @@
             <p><strong>No. Telepon :</strong> {{ $apotek->telepon ?? '-' }}</p>
             <p><strong>Jam Operasional :</strong> {{ $apotek->jam_operasional ?? '-' }}</p>
             <p><strong>Status :</strong> {{ $apotek->status_buka ?? '-' }}</p>
+
+            @if (!empty($apotek->link_lokasi))
+                <a href="{{ $apotek->link_lokasi }}" target="_blank" rel="noopener noreferrer" class="btn btn-primary mt-2">
+                    <i class="bi bi-geo-alt-fill"></i> Lihat di Google Maps
+                </a>
+            @else
+                <p class="text-muted mt-2">Lokasi belum ditambahkan</p>
+            @endif
         </div>
+
 
 
         <h2>Deskripsi :</h2>

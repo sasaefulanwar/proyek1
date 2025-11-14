@@ -50,6 +50,14 @@
                     </div>
 
                     <div class="mb-3">
+                        <label class="fw-bold">Link Lokasi Google Maps</label>
+                        <input type="text" name="link_lokasi" value="{{ $apotek->link_lokasi ?? '' }}" class="form-control"
+                            placeholder="https://maps.app.goo.gl/xxxxxx">
+                        <small class="text-muted">Tempelkan link 'Share location' dari Google Maps.</small>
+                    </div>
+
+
+                    <div class="mb-3">
                         <label class="fw-bold">Status Buka</label>
                         <select name="status_buka" class="form-select" required>
                             <option value="Buka" {{ ($apotek->status_buka ?? '') == 'Buka' ? 'selected' : '' }}>Buka
@@ -58,7 +66,7 @@
                             </option>
                         </select>
                     </div>
-                    
+
                     <div class="mb-3">
                         <label class="fw-bold">Logo Apotek</label><br>
                         @if (!empty($apotek->foto_apotek))
