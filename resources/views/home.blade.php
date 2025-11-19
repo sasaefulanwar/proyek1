@@ -27,12 +27,28 @@
                     Nikmati fitur unggulan seperti konsultasi online, beli obat dari rumah, dan pilih apotek favorit Anda.
                 </p>
 
-                <ul class="mt-3" style="list-style:none; padding-left:0;">
-                    <li><i class="fa-solid fa-circle-check" style="color: #008080;"></i> Pencarian apotek fleksibel</li>
-                    <li><i class="fa-solid fa-circle-check" style="color: #008080;"></i> Konsultasi online</li>
-                    <li><i class="fa-solid fa-circle-check" style="color: #008080;"></i> Beli obat dari rumah</li>
-                    <li><i class="fa-solid fa-circle-check" style="color: #008080;"></i> Bisa pilih apotek favorit</li>
+                <ul class="features-list">
+                    <li>
+                        <span class="icon"><i class="fa-solid fa-check"></i></span>
+                        <span class="label">Pencarian apotek fleksibel</span>
+                    </li>
+
+                    <li>
+                        <span class="icon"><i class="fa-solid fa-check"></i></span>
+                        <span class="label">Konsultasi online</span>
+                    </li>
+
+                    <li>
+                        <span class="icon"><i class="fa-solid fa-check"></i></span>
+                        <span class="label">Beli obat dari rumah</span>
+                    </li>
+
+                    <li>
+                        <span class="icon"><i class="fa-solid fa-check"></i></span>
+                        <span class="label">Bisa pilih apotek favorit</span>
+                    </li>
                 </ul>
+
             </div>
 
             {{-- Kolom Kanan: Map --}}

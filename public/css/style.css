@@ -417,3 +417,158 @@ body {
     background-color: #0048ff;
 }
 
+.features-list {
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0 0 0;
+    display: grid;
+    gap: 0.9rem 2rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+/* setiap item */
+.features-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.9rem;
+    padding-left: 0;
+    color: #0b2f2f; /* teks sedikit gelap; sesuaikan */
+    font-weight: 600;
+}
+
+/* ikon dalam lingkaran */
+.features-list .icon {
+    background: #008080; /* teal */
+    color: #fff;
+    min-width: 34px;
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+    font-size: 14px;
+    margin-top: 4px; /* sedikit turun agar sejajar teks */
+}
+
+/* teks item: memungkinkan multiple line */
+.features-list .label {
+    line-height: 1.25;
+    font-size: 15px;
+    margin-top: 10px;
+}
+
+/* responsive: 1 kolom di layar kecil */
+@media (max-width: 767.98px) {
+    .features-list {
+        grid-template-columns: 1fr;
+    }
+
+    .features-list li {
+        font-size: 15px;
+    }
+}
+
+/* Katalog obat */
+/* Search area */
+.search-card {
+    background: #98d4c8;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 6px 18px rgba(2, 48, 43, 0.06);
+    border: 1px solid rgba(15, 117, 107, 0.06);
+}
+.search-input {
+    height: 56px;
+    font-size: 16px;
+    border-radius: 10px;
+    border: 1px solid #e6f0ee;
+}
+.btn-primary-custom {
+    background-color: #0f756b;
+    color: #fff;
+    border-radius: 10px;
+    padding: 12px 18px;
+    font-weight: 600;
+}
+.btn-outline-reset {
+    border-radius: 10px;
+}
+
+/* Cards */
+.apotek-card {
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(15, 117, 107, 0.06);
+}
+.apotek-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 14px 30px rgba(3, 57, 52, 0.09);
+}
+.apotek-card .card-img-top {
+    height: 200px;
+    object-fit: cover;
+}
+.apotek-badge {
+    font-weight: 700;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: 13px;
+}
+.apotek-price {
+    color: #0f756b;
+    font-weight: 700;
+}
+
+/* helper */
+.muted-instruction {
+    color: #5b6b68;
+}
+.search-hint {
+    font-size: 13px;
+    color: #6c7a77;
+    margin-top: 6px;
+}
+@media (max-width: 767.98px) {
+    .apotek-card .card-img-top {
+        height: 160px;
+    }
+}
+
+/* Footer custom */
+.custom-footer {
+    background: #007a7a;
+    padding: 60px 0 40px;
+    border-top-left-radius: 60px;
+    border-top-right-radius: 60px;
+    margin-top: 100px;
+}
+
+.footer-link {
+    color: white;
+    margin: 0 25px;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.footer-link:hover {
+    text-decoration: underline;
+}
+
+.footer-social a {
+    color: #f2c94c; /* kuning seperti icon gambar */
+    font-size: 24px;
+    text-decoration: none;
+}
+
+.footer-social a:hover {
+    opacity: 0.7;
+}
+
+.footer-logo img {
+    background: white;
+    padding: 10px 25px;
+    border-radius: 40px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}

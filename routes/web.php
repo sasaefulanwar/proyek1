@@ -22,6 +22,8 @@ Route::get('/artikel/{id_artikel}', [HomeController::class, 'detailArtikel'])->n
 Route::get('/kontak', [kontakController::class, 'index'])->name('layouts.kontak');
 Route::post('/kontak/kirim', [kontakController::class, 'kirim'])->name('kontak.kirim');
 
+//katalog
+Route::get('/katalog', [HomeController::class, 'Katalog'])->name('katalog');
 
 //buat map
 Route::get('/reverse', [ReverseController::class, 'reverse'])->name('reverse');
