@@ -63,13 +63,13 @@
                 @if (Session::get('role') === 'admin')
                     <a href="{{ route('admin.list') }}"
                         class="nav-link {{ request()->is('admin/admin') ? 'active' : '' }}">
-                        <span class="nav-icon text-warning"><i class="fa-solid fa-store"></i></span>
-                        <span class="nav-text text-black ms-2">Apotek</span>
+                        <span class="nav-icon text-warning"><i class="fa-solid fa-users"></i></span>
+                        <span class="nav-text text-black ms-2">Admin Apotek</span>
                     </a>
                     <a href="{{ route('admin.apotek') }}"
                         class="nav-link {{ request()->is('admin/apotek') ? 'active' : '' }}">
-                        <span class="nav-icon text-warning"><i class="fa-solid fa-users"></i></span>
-                        <span class="nav-text text-black ms-2">Admin Apotek</span>
+                        <span class="nav-icon text-warning"><i class="fa-solid fa-store"></i></span>
+                        <span class="nav-text text-black ms-2">Daftar Apotek</span>
                     </a>
                     <a href="{{ route('admin.artikel') }}"
                         class="nav-link {{ request()->is('admin/artikel') ? 'active' : '' }}">

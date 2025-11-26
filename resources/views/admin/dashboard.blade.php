@@ -34,10 +34,13 @@
                     <div class="stat-icon">💊</div>
                     <div class="stat-body ms-3">
                         <div class="stat-title">Total Obat</div>
-                        <div class="stat-value">1,078</div>
+                        <div class="stat-value">
+                            {{ isset($jumlahDataObat) ? number_format($jumlahDataObat, 0, ',', '.') : '0' }}
+                        </div>
                     </div>
                 </div>
             </div>
+
         </div>
         <div class="card table-card">
             <div class="card-header text-center fw-bold">Menunggu Verifikasi</div>

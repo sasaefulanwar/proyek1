@@ -6,13 +6,13 @@ use App\Models\Admin;
 use App\Models\Apotek;
 use App\Models\Artikel;
 use App\Models\Obat;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Barryvdh\DomPDF\Facade\Pdf;
 
 class AdminController extends Controller
 {
@@ -86,6 +86,7 @@ class AdminController extends Controller
             ->where('status', 'menunggu')
             ->get();
 
+        // jangan ubah ini (sesuai permintaan)
         $totalObat = Obat::where('id_admin', Session::get('id'))->count();
 
         $obatHabis = Obat::where('id_admin', Session::get('id'))
@@ -96,6 +97,9 @@ class AdminController extends Controller
             ->orderBy('created_at', 'desc')
             ->limit(5)
             ->get();
+
+        // ===== tambahan: hitung total baris di tabel obat (seluruh data) =====
+        $jumlahDataObat = Obat::count();
 
         $title = 'Admin Dashboard';
         $adminName = Session::get('admin_name');
@@ -110,9 +114,9 @@ class AdminController extends Controller
             'admin',
             'totalObat',
             'obatHabis',
-            'obatTerbaru'
+            'obatTerbaru',
+            'jumlahDataObat'
         ));
-
     }
 
     // logout
@@ -150,6 +154,23 @@ class AdminController extends Controller
         $adminName = Session::get('admin_name');
 
         return view('admin.admin', compact('admins', 'title', 'adminName', 'search'));
+    }
+
+    public function detailApotek($id)
+    {
+        if (! Session::has('role')) {
+            return redirect('/login')->with('error', 'Silakan login terlebih dahulu');
+        }
+        if (Session::get('role') !== 'admin') {
+            abort(403, 'Akses ditolak');
+        }
+
+        $apotek = Apotek::where('id_apotek', $id)->firstOrFail();
+
+        $title = 'Detail Apotek';
+        $adminName = Session::get('admin_name');
+
+        return view('admin.detailApotek', compact('apotek', 'title', 'adminName'));
     }
 
     public function Tambahartikel()

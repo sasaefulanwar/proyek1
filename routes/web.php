@@ -42,6 +42,7 @@ Route::get('/admin/apotek', [AdminController::class, 'apotek'])->name('admin.apo
 Route::get('/admin/artikel', [AdminController::class, 'artikel'])->name('admin.artikel');
 Route::get('/admin/artikel/tambah', [AdminController::class, 'Tambahartikel'])->name('admin.artikel.tambah');
 Route::post('/admin/artikel/store', [AdminController::class, 'storeArtikel'])->name('admin.artikel.store');
+Route::get('/admin/apotek/{id}', [AdminController::class, 'detailApotek'])->name('admin.apotek.detail');
 
 Route::get('/admin/artikel/edit/{id}', [AdminController::class, 'editArtikel'])->name('admin.artikel.edit');
 Route::put('/admin/artikel/update/{id}', [AdminController::class, 'updateArtikel'])->name('admin.artikel.update');
