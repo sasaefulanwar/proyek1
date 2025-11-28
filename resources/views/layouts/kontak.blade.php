@@ -5,7 +5,7 @@
 @section('hero')
     <div class="hero-content container">
         <p class="muted-hashtag">#ApotekTapiOnline</p>
-        <h1 class="hero-title">Platfrom<br>Apptek<br>Online</h1>
+        <h1 class="hero-title">Platfrom<br>Appotek<br>Online</h1>
         <a href="{{ route('home') }}" style="color: #FFD700; text-decoration: none; font-weight: bold;">
   ← Kembali ke Beranda
 </a>
@@ -16,15 +16,6 @@
 @section('content')
     <div class="container py-5">
         <h1 class="mb-4">Kontak Kami </h1>
-
-    <div class="card mb-4 p-4 shadow-sm">
-    <h4>Informasi Apotek</h4>
-    <p><strong>Nama Apotek:</strong> Apotek Sehat Sentosa</p>
-    <p><strong>Alamat:</strong> Jl. Raya Sindangkerta No. 12, Bandung Barat</p>
-    <p><strong>No. Telepon / WhatsApp:</strong> 0812-3456-7890</p>
-    <p><strong>Email:</strong> apoteksehat@gmail.com</p>
-    <p><strong>Jam Buka:</strong> Senin - Sabtu, 08.00 - 20.00 WIB</p>
-  </div>
   
         @if(session('success'))
             <div style="background-color: #d4edda; color: #155724; padding: 10px; border-radius: 6px; margin-bottom: 15px;">
@@ -56,15 +47,15 @@
 
             <div style="margin-bottom: 15px;">
                 <label for="no_handphone" style="font-weight:bold;">No Handphone :</label>
-                <input type="text" id="no_handphone" name="no_handphone" value="{{ old('no_handphone') }}" required
+                <input type="text" id="nohp" name="nohp" value="{{ old('nohp') }}" required
                        style="width:100%; padding:10px; border:1px solid #ccc; border-radius:6px;">
-                @error('no_handphone')
+                @error('nohp')
                     <small style="color:red;">{{ $message }}</small>
                 @enderror
             </div>
 
             <div style="margin-bottom: 15px;">
-                <label for="pesan" style="font-weight:bold;">Pesan:</label>
+                <label for="pesan" style="font-weight:bold;">Pesan :</label>
                 <textarea id="pesan" name="pesan" rows="5" required
                           style="width:100%; padding:10px; border:1px solid #ccc; border-radius:6px;">{{ old('pesan') }}</textarea>
                 @error('pesan')
