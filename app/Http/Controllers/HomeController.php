@@ -9,7 +9,7 @@ class HomeController extends Controller
 {
     public function index(Request $request)
     {
-        $title = "MEDIFINDER";
+        $title = "MediFinder";
         $slug = "home";
         $konten = "Ini konten";
 
