@@ -10,15 +10,9 @@ class HomeController extends Controller
 {
     public function index(Request $request)
     {
-<<<<<<< HEAD
-        $title = "MediFinder";
-        $slug = "home";
-        $konten = "Ini konten";
-=======
         $title = 'MEDIFINDER';
         $slug = 'home';
         $konten = 'Ini konten';
->>>>>>> d7619fc9b748e1dd3c2b5fd461969ff3dd47e9f0
 
         $lokasi = $request->query('lokasi');
         $apotek = Apotek::whereHas('admin', function ($query) {
