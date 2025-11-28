@@ -20,6 +20,7 @@ class Obat extends Model
         'harga',
         'stok',
         'status',
+        'gambar_obat',
     ];
 
     // Relasi ke model Apotek

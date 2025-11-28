@@ -7,13 +7,20 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\RegisterApotekController;
 use Illuminate\Support\Facades\Session;
 use App\Models\Admin;
-
+use App\Http\Controllers\kontakController;
 
 //home "/"
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 // Artikel
 Route::get('/artikel', [HomeController::class, 'Artikel'])->name('artikel');
+
+//kontak 
+Route::get('/kontak', [kontakController::class, 'index'])->name('layouts.kontak');
+Route::post('/kontak/kirim', [kontakController::class, 'kirim'])->name('kontak.kirim');
+
+//katalog
+Route::get('/katalog', [HomeController::class, 'Katalog'])->name('katalog');
 
 //buat map
 Route::get('/reverse', [ReverseController::class, 'reverse'])->name('reverse');
@@ -29,6 +36,7 @@ Route::get('/admin/apotek', [AdminController::class, 'apotek'])->name('admin.apo
 Route::get('/admin/artikel', [AdminController::class, 'artikel'])->name('admin.artikel');
 Route::get('/admin/artikel/tambah', [AdminController::class, 'Tambahartikel'])->name('admin.artikel.tambah');
 Route::post('/admin/artikel/store', [AdminController::class, 'storeArtikel'])->name('admin.artikel.store');
+Route::get('/admin/apotek/{id}', [AdminController::class, 'detailApotek'])->name('admin.apotek.detail');
 
 Route::get('/admin/artikel/edit/{id}', [AdminController::class, 'editArtikel'])->name('admin.artikel.edit');
 Route::put('/admin/artikel/update/{id}', [AdminController::class, 'updateArtikel'])->name('admin.artikel.update');
@@ -44,6 +52,7 @@ Route::put('/admin/obat/update/{id_obat}', [AdminController::class, 'updateObat'
 Route::get('/admin/profile', [AdminController::class, 'ProfileApotek'])->name('admin.profile');
 Route::put('/admin/profile/update/{id_apotek}', [AdminController::class, 'updateApotek'])->name('apotek.update');
 Route::get('/admin/laporan', [AdminController::class, 'Laporan'])->name('admin.laporan');
+Route::get('/admin/laporan/export', [AdminController::class, 'exportLaporan'])->name('admin.laporan.export');
 
 
 Route::get('/apotek/register', [RegisterApotekController::class, 'create'])->name('apotek.create');

@@ -14,15 +14,16 @@ class Admin extends Model
     public $timestamps = true;
 
     protected $fillable = [
+        'id_apotek',
         'username',
-        'email',
         'password',
-        'role',
-        'status',
+        'email',
+        'google_id',
+        'temp_password',
         'nama_penanggung_jawab',
         'nama_apotek',
-        'id_apotek',
-        'temp_password',
+        'role',
+        'status',
     ];
 
     public function apotek()

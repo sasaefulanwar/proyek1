@@ -14,6 +14,16 @@
     <link rel="icon" type="image/png" sizes="512x512" href="{{ asset('images/Logo_remove.png') }}">
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        .disabled-link {
+            pointer-events: none;
+            /* tidak bisa diklik */
+            opacity: 0.5;
+            /* efek buram */
+            cursor: not-allowed;
+        }
+    </style>
+
 
 </head>
 
@@ -41,7 +51,7 @@
                         <h6 class="text-black fw-bold">{{ $apotek->nama_apotek ?? 'Nama Apotek' }}</h6>
                     </div>
                 @endif
-                
+
                 {{-- DASHBOARD --}}
                 <a href="{{ route('admin.dashboard') }}"
                     class="nav-link {{ request()->is('admin/dashboard') ? 'active' : '' }}">
@@ -53,13 +63,13 @@
                 @if (Session::get('role') === 'admin')
                     <a href="{{ route('admin.list') }}"
                         class="nav-link {{ request()->is('admin/admin') ? 'active' : '' }}">
-                        <span class="nav-icon text-warning"><i class="fa-solid fa-store"></i></span>
-                        <span class="nav-text text-black ms-2">Apotek</span>
+                        <span class="nav-icon text-warning"><i class="fa-solid fa-users"></i></span>
+                        <span class="nav-text text-black ms-2">Admin Apotek</span>
                     </a>
                     <a href="{{ route('admin.apotek') }}"
                         class="nav-link {{ request()->is('admin/apotek') ? 'active' : '' }}">
-                        <span class="nav-icon text-warning"><i class="fa-solid fa-users"></i></span>
-                        <span class="nav-text text-black ms-2">Admin Apotek</span>
+                        <span class="nav-icon text-warning"><i class="fa-solid fa-store"></i></span>
+                        <span class="nav-text text-black ms-2">Daftar Apotek</span>
                     </a>
                     <a href="{{ route('admin.artikel') }}"
                         class="nav-link {{ request()->is('admin/artikel') ? 'active' : '' }}">
@@ -71,38 +81,26 @@
 
                 {{-- ADMIN APOTEK --}}
                 @if (Session::get('role') === 'admin_apotek')
-                    {{-- <div class="text-center mb-3">
-                        @if ($apotek && $apotek->foto_apotek)
-                            <img src="{{ asset('storage/' . $apotek->foto_apotek) }}" alt="Foto Apotek"
-                                class="rounded-3 mb-2" style="width: 100%; height: 100px; object-fit: cover;">
-                        @else
-                            <img src="{{ asset('images/default-apotek.jpg') }}" alt="Foto Default"
-                                class="rounded-3 mb-2" style="width: 100%; height: 100px; object-fit: cover;">
-                        @endif
-
-                        <h6 class="text-black fw-bold">{{ $apotek->nama_apotek ?? 'Nama Apotek' }}</h6>
-                    </div> --}}
-
-
-
-
-                    {{-- Menu --}}
                     <a href="{{ route('admin.profile') }}"
                         class="nav-link {{ request()->is('admin/profile') ? 'active' : '' }}">
                         <span class="nav-icon text-warning"><i class="fa-solid fa-store"></i></span>
                         <span class="nav-text text-black ms-2">Profil Apotek</span>
                     </a>
 
-                    <a href="{{ route('admin.obat') }}"
-                        class="nav-link {{ request()->is('admin/obat') ? 'active' : '' }}">
-                        <span class="nav-icon text-warning"><i class="fa-solid fa-pills"></i></span>
-                        <span class="nav-text text-black ms-2">Obat</span>
+                    <a href="{{ $status === 'menunggu' ? '#' : route('admin.obat') }}"
+                        class="nav-link {{ request()->is('admin/obat') ? 'active' : '' }} {{ $status === 'menunggu' ? 'disabled-link' : '' }}">
+                        <span class="nav-icon {{ $status === 'menunggu' ? 'text-secondary' : 'text-warning' }}"><i
+                                class="fa-solid fa-pills"></i></span>
+                        <span
+                            class="nav-text {{ $status === 'menunggu' ? 'text-secondary' : 'text-black' }} ms-2">Obat</span>
                     </a>
 
-                    <a href="{{ route('admin.laporan') }}"
-                        class="nav-link {{ request()->is('admin/laporan') ? 'active' : '' }}">
-                        <span class="nav-icon text-warning"><i class="fa-solid fa-chart-line"></i></span>
-                        <span class="nav-text text-black ms-2">Laporan</span>
+                    <a href="{{ $status === 'menunggu' ? '#' : route('admin.laporan') }}"
+                        class="nav-link {{ request()->is('admin/laporan') ? 'active' : '' }} {{ $status === 'menunggu' ? 'disabled-link' : '' }}">
+                        <span class="nav-icon {{ $status === 'menunggu' ? 'text-secondary' : 'text-warning' }}"><i
+                                class="fa-solid fa-chart-line"></i></span>
+                        <span
+                            class="nav-text {{ $status === 'menunggu' ? 'text-secondary' : 'text-black' }} ms-2">Laporan</span>
                     </a>
                 @endif
 

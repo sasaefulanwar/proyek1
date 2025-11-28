@@ -8,9 +8,23 @@
         </div>
 
         <div class="card table-card shadow-sm p-4">
-            <form action="{{ route('admin.obat.update', $obat->id_obat) }}" method="POST">
+            <form action="{{ route('admin.obat.update', $obat->id_obat) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
+                <div class="mb-3">
+                    <label for="gambar_obat" class="form-label fw-semibold">Gambar Obat</label>
+                    @if ($obat->gambar_obat)
+                        <div class="mb-2">
+                            <img src="{{ asset('storage/' . $obat->gambar_obat) }}" alt="Gambar Obat"
+                                style="width: 120px; height: 120px; object-fit: cover; border-radius: 10px;">
+                        </div>
+                    @endif
+                    <input type="file" name="gambar_obat" id="gambar_obat"
+                        class="form-control @error('gambar_obat') is-invalid @enderror" accept="image/*">
+                    @error('gambar_obat')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
 
                 <div class="mb-3">
                     <label for="nama_obat" class="form-label fw-semibold">Nama Obat</label>
@@ -35,8 +49,8 @@
                 <div class="mb-3">
                     <label for="stok" class="form-label fw-semibold">Stok</label>
                     <input type="number" name="stok" id="stok"
-                        class="form-control @error('stok') is-invalid @enderror"
-                        value="{{ old('stok', $obat->stok) }}" placeholder="Masukkan jumlah stok">
+                        class="form-control @error('stok') is-invalid @enderror" value="{{ old('stok', $obat->stok) }}"
+                        placeholder="Masukkan jumlah stok">
                     @error('stok')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
@@ -45,8 +59,8 @@
                 <div class="mb-3">
                     <label for="harga" class="form-label fw-semibold">Harga (Rp)</label>
                     <input type="number" name="harga" id="harga"
-                        class="form-control @error('harga') is-invalid @enderror"
-                        value="{{ old('harga', $obat->harga) }}" placeholder="Masukkan harga obat">
+                        class="form-control @error('harga') is-invalid @enderror" value="{{ old('harga', $obat->harga) }}"
+                        placeholder="Masukkan harga obat">
                     @error('harga')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror

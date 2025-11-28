@@ -29,4 +29,9 @@ class Apotek extends Model
     {
         return $this->hasOne(Admin::class, 'id_apotek', 'id_apotek');
     }
+
+    public function obats()
+    {
+        return $this->hasMany(Obat::class, 'id_apotek', 'id_apotek');
+    }
 }

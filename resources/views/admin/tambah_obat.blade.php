@@ -7,7 +7,7 @@
             <div class="card-body p-4">
                 <h3 class="mb-4 text-center fw-bold">Tambah Obat</h3>
 
-                <form action="{{ route('admin.store') }}" method="POST">
+                <form action="{{ route('admin.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
 
                     <div class="mb-3">
@@ -16,6 +16,16 @@
                             class="form-control @error('nama_obat') is-invalid @enderror" value="{{ old('nama_obat') }}"
                             placeholder="Masukkan nama obat">
                         @error('nama_obat')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="kategori" class="form-label fw-semibold">Kategori</label>
+                        <input type="text" name="kategori" id="kategori"
+                            class="form-control @error('kategori') is-invalid @enderror" value="{{ old('kategori') }}"
+                            placeholder="Masukkan kategori obat">
+                        @error('kategori')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
@@ -41,11 +51,10 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="kategori" class="form-label fw-semibold">Kategori</label>
-                        <input type="text" name="kategori" id="kategori"
-                            class="form-control @error('kategori') is-invalid @enderror" value="{{ old('kategori') }}"
-                            placeholder="Masukkan kategori obat (misal: antibiotik, vitamin, dll)">
-                        @error('kategori')
+                        <label for="gambar_obat" class="form-label fw-semibold">Gambar Obat</label>
+                        <input type="file" name="gambar_obat" id="gambar_obat"
+                            class="form-control @error('gambar_obat') is-invalid @enderror" accept="image/*">
+                        @error('gambar_obat')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
@@ -55,6 +64,7 @@
                         <button type="submit" class="btn btn-primary px-4">Simpan</button>
                     </div>
                 </form>
+
             </div>
         </div>
     </div>

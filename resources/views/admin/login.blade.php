@@ -176,6 +176,9 @@
                     </div>
 
                     <button type="submit" class="btn btn-primary-cta">Masuk</button>
+                    <a href="{{ route('google.login') }}" class="btn btn-danger w-100">
+                        <i class="fab fa-google me-2"></i> Login dengan Google
+                    </a>
 
                     <p class="small-note">
                         Tidak punya akun?

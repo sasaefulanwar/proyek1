@@ -37,7 +37,12 @@
                                 <td>{{ $admin->username }}</td>
                                 <td>{{ $admin->nama_apotek }}</td>
                                 <td>{{ $admin->email ?? '-' }}</td>
-                                <td><span class="badge bg-success">Aktif</span></td>
+                                <td>
+                                    <span class="badge {{ $admin->status === 'menunggu' ? 'bg-danger' : 'bg-success' }}">
+                                        {{ $admin->status === 'menunggu' ? 'Belum Aktif' : 'Aktif' }}
+                                    </span>
+                                </td>
+
                             </tr>
                         @empty
                             <tr>

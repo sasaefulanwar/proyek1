@@ -34,10 +34,13 @@
                     <div class="stat-icon">💊</div>
                     <div class="stat-body ms-3">
                         <div class="stat-title">Total Obat</div>
-                        <div class="stat-value">1,078</div>
+                        <div class="stat-value">
+                            {{ isset($jumlahDataObat) ? number_format($jumlahDataObat, 0, ',', '.') : '0' }}
+                        </div>
                     </div>
                 </div>
             </div>
+
         </div>
         <div class="card table-card">
             <div class="card-header text-center fw-bold">Menunggu Verifikasi</div>
@@ -84,5 +87,107 @@
             </div>
         </div>
     @endif
+
+    @if (Session::get('role') === 'admin_apotek' && isset($admin))
+        @if ($admin->status === 'menunggu')
+            <div class="alert alert-danger d-flex align-items-center mt-3" role="alert">
+                <i class="fa-solid fa-xmark-circle me-2 fs-4"></i>
+                <div>
+                    <strong>Akun Anda belum terverifikasi.</strong>
+                    Silakan menunggu hingga 24 jam untuk proses verifikasi dan lengkapi data apotek Anda.
+                </div>
+            </div>
+        @elseif ($admin->status === 'disetujui')
+            <div class="d-flex gap-3 mt-3">
+
+                {{-- Card Total Obat --}}
+                <div class="card shadow-sm border-warning" style="min-width: 280px; border-width: 3px;">
+                    <div class="card-body">
+                        <h6 class="text-muted mb-1">Total Obat</h6>
+                        <h3 class="fw-bold">{{ $totalObat }}</h3>
+
+                        <span class="text-muted">
+                            Habis:
+                            <span class="text-danger fw-bold">{{ $obatHabis }}</span>
+                        </span>
+                    </div>
+                </div>
+
+                {{-- Card Pencarian Teratas --}}
+                <div class="card shadow-sm border-warning" style="min-width: 280px; border-width: 3px;">
+                    <div class="card-body">
+                        <h6 class="text-muted mb-1">Pencarian Teratas</h6>
+                        <h4 class="fw-bold mb-1">Paracetamol</h4>
+                        <small class="text-muted">+12% Minggu ini</small>
+                    </div>
+                </div>
+
+                {{-- Card Kunjungan Hari Ini --}}
+                <div class="card shadow-sm border-warning" style="min-width: 280px; border-width: 3px;">
+                    <div class="card-body">
+                        <h6 class="text-muted mb-1">Kunjungan (Hari ini)</h6>
+                        <h3 class="fw-bold">501</h3>
+                        <small class="text-muted">Jam ramai: 10:00 - 12:00</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mt-4 shadow-sm" style="border: 3px solid #f5b100; border-radius: 15px;">
+                <div class="card-body">
+                    <h4 class="fw-bold mb-3">Tabel Stok Singkat</h4>
+                    <table class="table table-bordered" style="border-color: #f5b100; border-width: 2px;">
+                        <thead class="fw-bold">
+                            <tr style="border-color: #f5b100;">
+                                <th style="border-color: #f5b100;">Nama Obat</th>
+                                <th style="border-color: #f5b100;">Kategori</th>
+                                <th style="border-color: #f5b100;">Stok</th>
+                                <th style="border-color: #f5b100;">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse ($obatTerbaru as $ob)
+                                <tr>
+                                    <td style="border-color: #f5b100;">{{ $ob->nama_obat }}</td>
+                                    <td style="border-color: #f5b100;">{{ $ob->kategori }}</td>
+                                    <td style="border-color: #f5b100;">{{ $ob->stok }}</td>
+
+                                    <td style="border-color: #f5b100;">
+                                        @php
+                                            if ($ob->stok == 0) {
+                                                $status = ['Habis', '#e74c3c'];
+                                            } elseif ($ob->stok < 10) {
+                                                $status = ['Menipis', '#d4a017'];
+                                            } else {
+                                                $status = ['Tersedia', '#2ecc71'];
+                                            }
+                                        @endphp
+
+                                        <span class="badge"
+                                            style="background-color: {{ $status[1] }}; padding: 8px 15px;">
+                                            {{ $status[0] }}
+                                        </span>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="4" class="text-center py-3">
+                                        Tidak ada data obat.
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+
+                    </table>
+                </div>
+            </div>
+        @endif
+    @endif
+
+    {{-- <div class="alert alert-success d-flex align-items-center mt-3" role="alert">
+                <i class="fa-solid fa-circle-check me-2 fs-4"></i>
+                <div>
+                    <strong>Akun Anda telah terverifikasi.</strong> Selamat, Anda sekarang dapat mengakses seluruh fitur.
+                </div>
+            </div> --}}
 
 @endsection

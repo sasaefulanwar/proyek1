@@ -2,18 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Admin;
 use App\Models\Apotek;
-use App\Models\Obat;
 use App\Models\Artikel;
-use Illuminate\Support\Str;
+use App\Models\Obat;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Mail;
-use App\Mail\ApotekApprovedMail;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
-
+use Illuminate\Support\Str;
 
 class AdminController extends Controller
 {
@@ -22,8 +21,6 @@ class AdminController extends Controller
     {
         return view('admin.login');
     }
-
-
 
     // proses login
     public function authenticate(Request $request)
@@ -42,12 +39,10 @@ class AdminController extends Controller
         $valid = false;
 
         try {
-            // ✅ Coba verifikasi pakai bcrypt
             if (Hash::check($request->password, $admin->password)) {
                 $valid = true;
             }
         } catch (\Throwable $e) {
-            // ❌ Kalau gagal (bukan bcrypt), bandingkan langsung (plaintext)
             if ($request->password === $admin->password) {
                 $valid = true;
             }
@@ -67,56 +62,70 @@ class AdminController extends Controller
 
     public function dashboard()
     {
-        if (!Session::has('role')) {
+        if (! Session::has('role')) {
             return redirect('/login')->with('error', 'Silakan login terlebih dahulu');
         }
 
         $role = Session::get('role');
-        if (!in_array($role, ['admin', 'admin_apotek'])) {
+        if (! in_array($role, ['admin', 'admin_apotek'])) {
             abort(403, 'Akses ditolak');
         }
 
-        // Ambil data admin yang sedang login
         $admin = Admin::find(Session::get('id'));
 
-        // Siapkan variabel apotek (hanya untuk admin_apotek)
         $apotek = null;
+        $status = null;
+
         if ($role === 'admin_apotek' && $admin && $admin->id_apotek) {
             $apotek = Apotek::where('id_apotek', $admin->id_apotek)->first();
+            $status = $admin->status;
         }
 
-        // Hitung total admin apotek (untuk dashboard admin utama)
         $totalAdminApotek = Admin::where('role', 'admin_apotek')->count();
-
-        // Ambil semua apotek yang masih menunggu verifikasi
         $dataApotek = Admin::where('role', 'admin_apotek')
             ->where('status', 'menunggu')
             ->get();
 
-        $title = "Admin Dashboard";
-        $adminName = Session::get('admin_name');
+        // jangan ubah ini (sesuai permintaan)
+        $totalObat = Obat::where('id_admin', Session::get('id'))->count();
 
-        // Debug sementara
-        // dd($admin, $apotek);
+        $obatHabis = Obat::where('id_admin', Session::get('id'))
+            ->where('stok', 0)
+            ->count();
+
+        $obatTerbaru = Obat::where('id_admin', Session::get('id'))
+            ->orderBy('created_at', 'desc')
+            ->limit(5)
+            ->get();
+
+        // ===== tambahan: hitung total baris di tabel obat (seluruh data) =====
+        $jumlahDataObat = Obat::count();
+
+        $title = 'Admin Dashboard';
+        $adminName = Session::get('admin_name');
 
         return view('admin.dashboard', compact(
             'title',
             'adminName',
             'totalAdminApotek',
             'dataApotek',
-            'apotek'
+            'apotek',
+            'status',
+            'admin',
+            'totalObat',
+            'obatHabis',
+            'obatTerbaru',
+            'jumlahDataObat'
         ));
     }
-
-
 
     // logout
     public function logout(Request $request)
     {
         $request->session()->flush(); // hapus semua session
+
         return redirect()->route('login')->with('success', 'Berhasil logout.');
     }
-
 
     public function admin(Request $request)
     {
@@ -126,7 +135,6 @@ class AdminController extends Controller
         if (Session::get('role') !== 'admin') {
             abort(403, 'Akses ditolak');
         }
-
 
         $search = $request->query('search');
 
@@ -148,9 +156,27 @@ class AdminController extends Controller
         return view('admin.admin', compact('admins', 'title', 'adminName', 'search'));
     }
 
+    public function detailApotek($id)
+    {
+        if (! Session::has('role')) {
+            return redirect('/login')->with('error', 'Silakan login terlebih dahulu');
+        }
+        if (Session::get('role') !== 'admin') {
+            abort(403, 'Akses ditolak');
+        }
+
+        $apotek = Apotek::where('id_apotek', $id)->firstOrFail();
+
+        $title = 'Detail Apotek';
+        $adminName = Session::get('admin_name');
+
+        return view('admin.detailApotek', compact('apotek', 'title', 'adminName'));
+    }
+
     public function Tambahartikel()
     {
-        $title = "Tambah Artikel";
+        $title = 'Tambah Artikel';
+
         return view('admin.tambahartikel', compact('title'));
     }
 
@@ -185,6 +211,7 @@ class AdminController extends Controller
     {
         $title = 'Edit Artikel';
         $artikel = Artikel::findOrFail($id);
+
         return view('admin.editartikel', compact('title', 'artikel'));
     }
 
@@ -205,7 +232,7 @@ class AdminController extends Controller
 
         if ($request->hasFile('gambar')) {
             $file = $request->file('gambar');
-            $filename = time() . '_' . $file->getClientOriginalName();
+            $filename = time().'_'.$file->getClientOriginalName();
             $file->move(public_path('uploads/artikel'), $filename);
             $artikel->gambar = $filename;
         }
@@ -220,15 +247,14 @@ class AdminController extends Controller
         $artikel = Artikel::findOrFail($id);
 
         // hapus file gambar juga jika ada
-        if ($artikel->gambar && file_exists(public_path('uploads/artikel/' . $artikel->gambar))) {
-            unlink(public_path('storage/' . $artikel->gambar));
+        if ($artikel->gambar && file_exists(public_path('uploads/artikel/'.$artikel->gambar))) {
+            unlink(public_path('storage/'.$artikel->gambar));
         }
 
         $artikel->delete();
 
         return redirect()->route('admin.artikel')->with('success', 'Artikel berhasil dihapus.');
     }
-
 
     public function apotek(Request $request)
     {
@@ -261,12 +287,93 @@ class AdminController extends Controller
         return view('admin.apotek', compact('admins', 'title', 'adminName', 'search'));
     }
 
+    public function obat(Request $request)
+    {
+        if (! Session::has('role')) {
+            return redirect('/login')->with('error', 'Silakan login terlebih dahulu');
+        }
+
+        $role = Session::get('role');
+        if (! in_array($role, ['admin', 'admin_apotek'])) {
+            abort(403, 'Akses ditolak');
+        }
+
+        if (Session::get('role') === 'admin_apotek') {
+            $admin = Admin::find(Session::get('id'));
+            if ($admin && $admin->status === 'menunggu') {
+                return redirect()->route('admin.profile')
+                    ->with('error', 'Akun Anda belum terverifikasi. Anda hanya dapat mengakses halaman profil apotek.');
+            }
+        }
+
+        $title = 'Data Obat';
+        $adminName = Session::get('admin_name');
+        $adminId = Session::get('id');
+
+        $admin = Admin::find($adminId);
+        $id_apotek = $admin ? $admin->id_apotek : null;
+
+        $status = null;
+
+        if ($role === 'admin_apotek' && $admin && $admin->id_apotek) {
+            $apotek = Apotek::where('id_apotek', $admin->id_apotek)->first();
+            $status = $admin->status;
+        }
+
+        $search = $request->query('search');
+        $query = Obat::where('id_admin', $adminId);
+
+        if ($id_apotek) {
+            $query->where('id_apotek', $id_apotek);
+        }
+
+        $apotek = null;
+        if ($role === 'admin_apotek' && $admin && $admin->id_apotek) {
+            $apotek = Apotek::where('id_apotek', $admin->id_apotek)->first();
+        }
+
+        if (! empty($search)) {
+            $query->where(function ($q) use ($search) {
+                $q->where('nama_obat', 'like', "%$search%")
+                    ->orWhere('kategori', 'like', "%$search%");
+            });
+        }
+
+        $obats = $query->orderBy('nama_obat')->get();
+
+        return view('admin.obat', compact('title', 'adminName', 'obats', 'search', 'apotek', 'status'));
+    }
+
     public function tambahObat()
     {
-        $apotek = Apotek::all();
-        $title = "Tambah Obat";
-        return view('admin.tambahobat', compact('apotek', 'title'));
+        if (! Session::has('role')) {
+            return redirect('/login')->with('error', 'Silakan login terlebih dahulu');
+        }
+
+        $role = Session::get('role');
+        if (! in_array($role, ['admin', 'admin_apotek'])) {
+            abort(403, 'Akses ditolak');
+        }
+
+        $adminName = Session::get('admin_name');
+        $adminId = Session::get('id');
+        $admin = Admin::find($adminId);
+        $id_apotek = $admin ? $admin->id_apotek : null;
+
+        $status = null;
+
+        if ($role === 'admin_apotek' && $admin && $admin->id_apotek) {
+            $apotek = Apotek::where('id_apotek', $admin->id_apotek)->first();
+            $status = $admin->status;
+        }
+
+        $apotek = Apotek::where('id_apotek', $id_apotek)->first();
+
+        $title = 'Tambah Obat';
+
+        return view('admin.tambah_obat', compact('apotek', 'title', 'adminName', 'status'));
     }
+
     public function storeObat(Request $request)
     {
         $request->validate([
@@ -274,6 +381,7 @@ class AdminController extends Controller
             'kategori' => 'nullable|string|max:50',
             'stok' => 'required|numeric|min:1',
             'harga' => 'required|numeric|min:100',
+            'gambar_obat' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
         $adminId = session('id');
@@ -284,6 +392,12 @@ class AdminController extends Controller
         }
 
         $idApotek = $admin->id_apotek;
+        $pathGambar = null;
+
+        // 🖼️ Upload gambar jika ada
+        if ($request->hasFile('gambar_obat')) {
+            $pathGambar = $request->file('gambar_obat')->store('obat', 'public');
+        }
 
         Obat::create([
             'nama_obat' => $request->nama_obat,
@@ -292,6 +406,7 @@ class AdminController extends Controller
             'harga' => $request->harga,
             'id_apotek' => $idApotek,
             'id_admin' => $adminId,
+            'gambar_obat' => $pathGambar,
         ]);
 
         return redirect()->route('admin.obat')->with('success', 'Data obat berhasil ditambahkan.');
@@ -299,23 +414,35 @@ class AdminController extends Controller
 
     public function editObat($id_obat)
     {
-        if (!Session::has('role')) {
+        if (! Session::has('role')) {
             return redirect('/login')->with('error', 'Silakan login terlebih dahulu');
         }
-
-        if (Session::get('role') !== 'admin_apotek') {
+        $role = Session::get('role');
+        if (! in_array($role, ['admin', 'admin_apotek'])) {
             abort(403, 'Akses ditolak');
         }
 
+        $adminName = Session::get('admin_name');
+        $adminId = Session::get('id');
+        $admin = Admin::find($adminId);
+        $id_apotek = $admin ? $admin->id_apotek : null;
+
+        $status = null;
+
+        if ($role === 'admin_apotek' && $admin && $admin->id_apotek) {
+            $apotek = Apotek::where('id_apotek', $admin->id_apotek)->first();
+            $status = $admin->status;
+        }
+
         $obat = Obat::find($id_obat);
-        if (!$obat) {
+        if (! $obat) {
             return redirect()->route('admin.obat')->with('error', 'Data obat tidak ditemukan.');
         }
 
-        $apotek = Apotek::all();
+        $apotek = Apotek::where('id_apotek', $id_apotek)->first();
         $title = 'Edit Obat';
 
-        return view('admin.editobat', compact('obat', 'apotek', 'title'));
+        return view('admin.editobat', compact('obat', 'apotek', 'title', 'adminName', 'status'));
     }
 
     public function updateObat(Request $request, $id_obat)
@@ -325,11 +452,21 @@ class AdminController extends Controller
             'kategori' => 'required|string|max:50',
             'stok' => 'required|numeric|min:1',
             'harga' => 'required|numeric|min:100',
+            'gambar_obat' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
         $obat = Obat::find($id_obat);
-        if (!$obat) {
+        if (! $obat) {
             return redirect()->route('admin.obat')->with('error', 'Data obat tidak ditemukan.');
+        }
+
+        // 🖼️ Update gambar jika ada file baru
+        if ($request->hasFile('gambar_obat')) {
+            if ($obat->gambar_obat && Storage::disk('public')->exists($obat->gambar_obat)) {
+                Storage::disk('public')->delete($obat->gambar_obat);
+            }
+            $pathGambar = $request->file('gambar_obat')->store('obat', 'public');
+            $obat->gambar_obat = $pathGambar;
         }
 
         $obat->update([
@@ -337,6 +474,7 @@ class AdminController extends Controller
             'kategori' => $request->kategori,
             'stok' => $request->stok,
             'harga' => $request->harga,
+            'gambar_obat' => $obat->gambar_obat,
         ]);
 
         return redirect()->route('admin.obat')->with('success', 'Data obat berhasil diperbarui.');
@@ -344,7 +482,7 @@ class AdminController extends Controller
 
     public function deleteObat($id)
     {
-        if (!Session::has('role')) {
+        if (! Session::has('role')) {
             return redirect('/login')->with('error', 'Silakan login terlebih dahulu');
         }
 
@@ -365,7 +503,7 @@ class AdminController extends Controller
 
     public function artikel(Request $request)
     {
-        if (!session()->has('role')) {
+        if (! session()->has('role')) {
             return redirect('/login')->with('error', 'Silakan login terlebih dahulu');
         }
 
@@ -373,12 +511,12 @@ class AdminController extends Controller
             abort(403, 'Akses ditolak');
         }
 
-        $title = "Kelola Artikel";
+        $title = 'Kelola Artikel';
 
         $search = $request->query('search');
         $artikelQuery = Artikel::query();
 
-        if (!empty($search)) {
+        if (! empty($search)) {
             $artikelQuery->where('judul', 'LIKE', "%{$search}%");
         }
 
@@ -387,59 +525,25 @@ class AdminController extends Controller
         return view('admin.artikel', compact('title', 'artikels'));
     }
 
-    public function obat(Request $request)
+    public function ProfileApotek(Request $request)
     {
         if (! Session::has('role')) {
             return redirect('/login')->with('error', 'Silakan login terlebih dahulu');
         }
 
         $role = Session::get('role');
-        if (!in_array($role, ['admin', 'admin_apotek'])) {
+        if (! in_array($role, ['admin', 'admin_apotek'])) {
             abort(403, 'Akses ditolak');
         }
 
-
-        $title = 'Data Obat';
-        $adminName = Session::get('admin_name');
-        $adminId = Session::get('id');
-
-        $admin = Admin::find($adminId);
-        $id_apotek = $admin ? $admin->id_apotek : null;
-
-
-        $search = $request->query('search');
-        $query = Obat::where('id_admin', $adminId);
-
-        if ($id_apotek) {
-            $query->where('id_apotek', $id_apotek);
-        }
+        $admin = Admin::find(Session::get('id'));
 
         $apotek = null;
+        $status = null;
+
         if ($role === 'admin_apotek' && $admin && $admin->id_apotek) {
             $apotek = Apotek::where('id_apotek', $admin->id_apotek)->first();
-        }
-
-        if (!empty($search)) {
-            $query->where(function ($q) use ($search) {
-                $q->where('nama_obat', 'like', "%$search%")
-                    ->orWhere('kategori', 'like', "%$search%");
-            });
-        }
-
-        $obats = $query->orderBy('nama_obat')->get();
-
-        return view('admin.obat', compact('title', 'adminName', 'obats', 'search', 'apotek'));
-    }
-
-
-    public function ProfileApotek(Request $request)
-    {
-        if (!Session::has('role')) {
-            return redirect('/login')->with('error', 'Silakan login terlebih dahulu');
-        }
-
-        if (Session::get('role') !== 'admin_apotek') {
-            abort(403, 'Akses ditolak');
+            $status = $admin->status; // ambil status admin_apotek
         }
 
         $title = 'Profil Apotek';
@@ -452,27 +556,40 @@ class AdminController extends Controller
         // Ambil data apotek dari relasi
         $apotek = $admin?->apotek;
 
-        return view('admin.profile', compact('title', 'adminName', 'apotek'));
+        return view('admin.profile', compact('title', 'adminName', 'apotek', 'status', 'admin'));
     }
 
     public function updateApotek(Request $request, $id_apotek)
     {
-        if (!Session::has('role')) {
+        if (! Session::has('role')) {
             return redirect('/login')->with('error', 'Silakan login terlebih dahulu');
         }
 
-        if (Session::get('role') !== 'admin_apotek') {
+        $role = Session::get('role');
+        if (! in_array($role, ['admin', 'admin_apotek'])) {
             abort(403, 'Akses ditolak');
+        }
+
+        $admin = Admin::find(Session::get('id'));
+
+        $apotek = null;
+        $status = null;
+
+        if ($role === 'admin_apotek' && $admin && $admin->id_apotek) {
+            $apotek = Apotek::where('id_apotek', $admin->id_apotek)->first();
+            $status = $admin->status; // ambil status admin_apotek
         }
 
         // Validasi input
         $request->validate([
+            'nama_apotek' => 'nullable|string|max:150',
             'alamat' => 'nullable|string',
             'telepon' => 'nullable|string|max:20',
             'email' => 'nullable|email|max:100',
             'jam_operasional' => 'nullable|string|max:255',
             'status_buka' => 'nullable|string|max:255',
             'deskripsi' => 'nullable|string',
+            'link_lokasi' => 'nullable|string|max:255',
             'foto_apotek' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
@@ -480,21 +597,21 @@ class AdminController extends Controller
         $apotek = Apotek::findOrFail($id_apotek);
 
         // Update data dasar
+        $apotek->nama_apotek = $request->nama_apotek ?? $apotek->nama_apotek;
         $apotek->alamat = $request->alamat;
         $apotek->telepon = $request->telepon;
         $apotek->email = $request->email;
         $apotek->jam_operasional = $request->jam_operasional;
         $apotek->status_buka = $request->status_buka;
         $apotek->deskripsi = $request->deskripsi;
+        $apotek->link_lokasi = $request->link_lokasi ?? $apotek->link_lokasi;
 
         // Jika ada upload foto baru
         if ($request->hasFile('foto_apotek')) {
-            // Hapus foto lama jika ada
-            if ($apotek->foto_apotek && Storage::exists('public/' . $apotek->foto_apotek)) {
-                Storage::delete('public/' . $apotek->foto_apotek);
+            if ($apotek->foto_apotek && Storage::exists('public/'.$apotek->foto_apotek)) {
+                Storage::delete('public/'.$apotek->foto_apotek);
             }
 
-            // Simpan foto baru
             $path = $request->file('foto_apotek')->store('apotek', 'public');
             $apotek->foto_apotek = $path;
         }
@@ -509,28 +626,97 @@ class AdminController extends Controller
         if (! Session::has('role')) {
             return redirect('/login')->with('error', 'Silakan login terlebih dahulu');
         }
-        if (Session::get('role') !== 'admin_apotek') {
+        $role = Session::get('role');
+        if (! in_array($role, ['admin', 'admin_apotek'])) {
             abort(403, 'Akses ditolak');
         }
 
-        // $search = $request->query('search');
+        if (Session::get('role') === 'admin_apotek') {
+            $admin = Admin::find(Session::get('id'));
+            if ($admin && $admin->status === 'menunggu') {
+                return redirect()->route('admin.profile')
+                    ->with('error', 'Akun Anda belum terverifikasi. Anda hanya dapat mengakses halaman profil apotek.');
+            }
+        }
 
-        // $adminsQuery = Admin::where('role', 'admin_apotek');
+        $adminName = Session::get('admin_name');
+        $adminId = Session::get('id');
+        $admin = Admin::find($adminId);
+        $id_apotek = $admin ? $admin->id_apotek : null;
 
-        // if (! empty($search)) {
-        //     $adminsQuery->where(function ($q) use ($search) {
-        //         $q->where('username', 'like', "%{$search}%")
-        //             ->orWhere('nama_apotek', 'like', "%{$search}%")
-        //             ->orWhere('nama_penanggung_jawab', 'like', "%{$search}%");
-        //     });
-        // }
+        $status = null;
 
-        // $admins = $adminsQuery->orderBy('id_admin', 'desc')->get();
+        if ($role === 'admin_apotek' && $admin && $admin->id_apotek) {
+            $apotek = Apotek::where('id_apotek', $admin->id_apotek)->first();
+            $status = $admin->status;
+        }
+
+        $apotek = null;
+        if ($role === 'admin_apotek' && $admin && $admin->id_apotek) {
+            $apotek = Apotek::where('id_apotek', $admin->id_apotek)->first();
+        }
+
+        $from = $request->query('from'); // YYYY-MM-DD
+        $to = $request->query('to');
+
+        $data = collect();
+
+        // tampilkan data hanya jika user telah mengisi from & to
+        if ($from && $to) {
+            $query = Obat::query()
+                ->select('id_obat', 'nama_obat', 'kategori', 'stok', 'harga', 'created_at');
+
+            // batasi per apotek bila role admin_apotek
+            if ($role === 'admin_apotek' && $id_apotek) {
+                $query->where('id_apotek', $id_apotek);
+            }
+
+            // filter berdasarkan created_at antara from..to (inklusif)
+            $query->whereBetween(\DB::raw('DATE(created_at)'), [$from, $to]);
+
+            // urutkan newest first (sesuai desain kamu; atur sesuai kebutuhan)
+            $data = $query->orderBy('created_at', 'asc')->get();
+        }
 
         $title = 'Laporan';
-        $adminName = Session::get('admin_name');
 
-        return view('admin.laporan', compact('title', 'adminName'));
+        return view('admin.laporan', compact('title', 'adminName', 'apotek', 'status', 'data', 'from', 'to'));
+    }
+
+    public function exportLaporan(Request $request)
+    {
+        $request->validate([
+            'from' => 'required|date',
+            'to' => 'required|date|after_or_equal:from',
+        ]);
+
+        $from = $request->query('from');
+        $to = $request->query('to');
+
+        $adminId = session('id');
+        $role = session('role');
+        $admin = Admin::find($adminId);
+        $id_apotek = $admin ? $admin->id_apotek : null;
+
+        $query = Obat::query()
+            ->select('id_obat', 'nama_obat', 'kategori', 'stok', 'harga', 'created_at');
+
+        if ($role === 'admin_apotek' && $id_apotek) {
+            $query->where('id_apotek', $id_apotek);
+        }
+
+        $query->whereBetween(\DB::raw('DATE(created_at)'), [$from, $to]);
+        $data = $query->orderBy('created_at', 'asc')->get();
+
+        // tambahkan total nilai stok keseluruhan (opsional)
+        $totalNilai = $data->sum(function ($item) {
+            return $item->stok * $item->harga;
+        });
+
+        $pdf = Pdf::loadView('admin.pdf.laporan_stok', compact('data', 'from', 'to', 'totalNilai'));
+        $filename = 'laporan-stok-'.$from.'-sampai-'.$to.'.pdf';
+
+        return $pdf->download($filename);
     }
 
     public function verifikasiApotek($id)
@@ -548,7 +734,7 @@ class AdminController extends Controller
                     ->subject('Akun Anda Telah Diverifikasi - MediFinder');
             });
         } catch (\Throwable $e) {
-            return back()->with('error', 'Verifikasi berhasil, tetapi gagal mengirim email: ' . $e->getMessage());
+            return back()->with('error', 'Verifikasi berhasil, tetapi gagal mengirim email: '.$e->getMessage());
         }
 
         return back()->with('success', 'Akun apotek berhasil diverifikasi dan email telah dikirim.');

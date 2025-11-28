@@ -28,6 +28,7 @@
                             <th>Lokasi</th>
                             <th>Email</th>
                             <th>Status Toko</th>
+                            <th>Aksi</th> {{-- kolom baru --}}
                         </tr>
                     </thead>
                     <tbody>
@@ -46,15 +47,22 @@
                                         <span class="badge bg-secondary">{{ $admin->status_buka }}</span>
                                     @endif
                                 </td>
+                                <td>
+                                    <a href="{{ route('admin.apotek.detail', $admin->id_apotek) }}"
+                                        class="btn btn-sm btn-outline-primary">
+                                        <i class="fa-solid fa-eye me-1"></i> Detail
+                                    </a>
+                                </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="text-center py-4 text-muted">Tidak ada yang tersedia</td>
+                                <td colspan="6" class="text-center py-4 text-muted">Tidak ada yang tersedia</td>
                             </tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
         </div>
+
     </div>
 @endsection

@@ -27,7 +27,6 @@ class RegisterApotekController extends Controller
 
         DB::beginTransaction();
         try {
-            // 1️⃣ Simpan dulu data apotek (hanya nama_apotek)
             $apotek = Apotek::create([
                 'nama_apotek' => $request->nama_apotek,
                 'email' => $request->email,

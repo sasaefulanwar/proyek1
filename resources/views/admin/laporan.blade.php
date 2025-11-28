@@ -1,51 +1,85 @@
 @extends('layouts.main_dashboard')
-@section('title', $title ?? 'Daftar Admin')
+@section('title', $title ?? 'Laporan')
 
 @section('content')
     <div class="container mt-2">
-        <div class="admin-header mb-4">
-            <h2 class="fw-bold text-white mb-3">Laporan</h2>
+        <h2 class="text-white fw-bold">Laporan</h2>
 
-            {{-- <form method="GET" action="{{ route('admin.list') }}" class="search-form d-flex align-items-center">
-                <div class="search-box d-flex align-items-center me-2">
-                    <span class="search-icon me-2">🔍</span>
-                    <input type="text" name="search" class="form-control search-input" placeholder="Cari Admin"
-                        value="{{ $search ?? '' }}">
+        <div class="mb-3 text-end">
+            @if ($data && $data->count() > 0)
+                <a href="{{ route('admin.laporan.export', request()->query()) }}" class="btn btn-success">
+                    <i class="fa-solid fa-print me-2"></i> Cetak Laporan
+                </a>
+            @else
+                <button class="btn btn-success" disabled>
+                    <i class="fa-solid fa-print me-2"></i> Cetak Laporan
+                </button>
+            @endif
+        </div>
+
+        <div class="card mb-3 p-3" style="background:#f0f0f0;">
+            <form method="GET" action="{{ route('admin.laporan') }}" class="row g-2 align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label">Tanggal Awal</label>
+                    <input type="date" name="from" class="form-control" value="{{ $from ?? '' }}" required>
                 </div>
-                <button type="submit" class="btn btn-primary search-btn">Cari</button>
-            </form> --}}
+
+                <div class="col-md-3">
+                    <label class="form-label">Tanggal Akhir</label>
+                    <input type="date" name="to" class="form-control" value="{{ $to ?? '' }}" required>
+                </div>
+
+                <div class="col-md-6 text-end">
+                    <button type="submit" class="btn btn-primary"> <i class="fa-solid fa-eye me-2"></i> Tampilkan</button>
+                </div>
+            </form>
         </div>
 
 
-        <div class="card table-card shadow-sm">
-            {{-- <div class="card-header text-center fw-bold">Daftar Admin</div> --}}
+
+        <div class="card">
             <div class="card-body p-0">
-                {{-- <table class="table table-hover mb-0 align-middle">
-                    <thead class="table-head">
+                <table class="table mb-0" style="border: 3px solid #f5b100; border-collapse: collapse;">
+
+                    <thead class="fw-bold" style="background:#fff7e0;">
                         <tr>
-                            <th>ID</th>
-                            <th>Username</th>
-                            <th>Nama Apotek</th>
-                            <th>Email</th>
-                            <th>Status</th>
+                            <th style="border: 3px solid #f5b100;">No</th>
+                            <th style="border: 3px solid #f5b100;">Tanggal</th>
+                            <th style="border: 3px solid #f5b100;">Nama Obat</th>
+                            <th style="border: 3px solid #f5b100;">Stok</th>
+                            <th style="border: 3px solid #f5b100;">Harga Satuan</th>
+                            <th style="border: 3px solid #f5b100;">Nilai Stok</th>
                         </tr>
                     </thead>
+
                     <tbody>
-                        @forelse ($admins as $admin)
+                        @if ($data && $data->count() > 0)
+                            @foreach ($data as $i => $row)
+                                <tr>
+                                    <td style="border: 3px solid #f5b100;">{{ $i + 1 }}</td>
+                                    <td style="border: 3px solid #f5b100;">
+                                        {{ \Carbon\Carbon::parse($row->created_at)->format('Y-m-d') }}
+                                    </td>
+                                    <td style="border: 3px solid #f5b100;">{{ $row->nama_obat }}</td>
+                                    <td style="border: 3px solid #f5b100;">{{ $row->stok }}</td>
+                                    <td style="border: 3px solid #f5b100;">
+                                        {{ 'Rp ' . number_format($row->harga, 0, ',', '.') }}
+                                    </td>
+                                    <td style="border: 3px solid #f5b100;">
+                                        {{ 'Rp ' . number_format($row->stok * $row->harga, 0, ',', '.') }}
+                                    </td>
+                                </tr>
+                            @endforeach
+                        @else
                             <tr>
-                                <td>{{ $admin->id }}</td>
-                                <td>{{ $admin->username }}</td>
-                                <td>{{ $admin->nama_apotek }}</td>
-                                <td>{{ $admin->email ?? '-' }}</td>
-                                <td><span class="badge bg-success">Aktif</span></td>
+                                <td colspan="6" class="text-center py-4" style="border: 3px solid #f5b100;">
+                                    Silakan pilih periode lalu tekan <strong>Tampilkan</strong>
+                                </td>
                             </tr>
-                        @empty
-                            <tr>
-                                <td colspan="5" class="text-center py-4 text-muted">Tidak ada yang tersedia</td>
-                            </tr>
-                        @endforelse
+                        @endif
                     </tbody>
-                </table> --}}
+                </table>
+
             </div>
         </div>
     </div>
